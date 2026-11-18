@@ -1,0 +1,421 @@
+/* ---------- Page scaffolding ---------- */
+
+.page__title {
+  margin: 10px 0 6px;
+  font-size: clamp(1.65rem, 6.2vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.page__sub {
+  color: var(--cream-soft);
+}
+
+.page__heading {
+  margin-top: 28px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.page__intro {
+  max-width: 46ch;
+  margin-bottom: 20px;
+  color: var(--cream-soft);
+}
+
+.empty {
+  padding: 24px 0;
+  color: var(--cream-soft);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap);
+  color: var(--cream-soft);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--cream);
+}
+
+.chevron {
+  flex-shrink: 0;
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 22px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--sconce);
+  color: var(--night-950);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--sconce-strong);
+}
+
+.btn--ghost {
+  border-color: var(--night-500);
+  background: transparent;
+  color: var(--cream);
+}
+
+.btn--ghost:hover {
+  background: var(--night-700);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ---------- Theatre list: a listings board ---------- */
+
+.listing {
+  border-top: 1px solid var(--night-600);
+}
+
+.listing__item {
+  border-bottom: 1px solid var(--night-600);
+}
+
+.listing__row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 64px;
+  padding: 18px 4px;
+  text-decoration: none;
+}
+
+.listing__name {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.listing__row:hover .listing__name {
+  color: var(--sconce);
+}
+
+.listing__leader {
+  flex: 1;
+  min-width: 16px;
+  border-bottom: 2px dotted var(--night-500);
+  transform: translateY(-4px);
+}
+
+.listing__meta {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-end;
+  max-width: 46%;
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+@media (max-width: 520px) {
+  .listing__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 14px 4px;
+  }
+
+  .listing__leader {
+    display: none;
+  }
+
+  .listing__meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 12px;
+    max-width: none;
+    text-align: left;
+  }
+}
+
+/* ---------- Auditorium cards ---------- */
+
+.aud-list {
+  display: grid;
+  gap: 12px;
+}
+
+.aud-card {
+  display: grid;
+  grid-template-columns: minmax(96px, 34%) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--night-600);
+  border-radius: var(--radius-m);
+  background: var(--night-700);
+  text-decoration: none;
+}
+
+.aud-card:hover {
+  border-color: var(--sconce);
+}
+
+.aud-card__map,
+.aud-header__map {
+  display: block;
+  aspect-ratio: 4 / 3;
+  padding: 8px;
+  border-radius: var(--radius-s);
+  background: var(--night-900);
+}
+
+.aud-card__body,
+.aud-header__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.aud-card__name,
+.aud-header__name {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.aud-header {
+  display: grid;
+  grid-template-columns: minmax(96px, 30%) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  margin: 12px 0 16px;
+}
+
+.aud-header__theatre {
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+}
+
+.mini-map {
+  width: 100%;
+  height: 100%;
+}
+
+.mini-map__screen {
+  fill: var(--cream);
+}
+
+.mini-map__seat {
+  fill: var(--cream-faint);
+}
+
+.mini-map--dim .mini-map__seat {
+  fill: var(--night-500);
+}
+
+.mini-map__seat.is-current {
+  fill: var(--sconce);
+  stroke: var(--night-950);
+  stroke-width: 0.2;
+}
+
+/* ---------- Facts, tags and badges ---------- */
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+}
+
+.tag {
+  padding: 1px 9px;
+  border: 1px solid var(--night-500);
+  border-radius: 999px;
+  color: var(--cream);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.tag--vip {
+  border-color: var(--sconce);
+  color: var(--sconce);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.badge--estimated {
+  border: 1px dashed var(--cream-faint);
+  color: var(--cream-soft);
+}
+
+.badge--sample {
+  border: 1px solid rgb(224 80 106 / 0.55);
+  background: rgb(224 80 106 / 0.18);
+  color: #ffc2cc;
+}
+
+/* ---------- Notices ---------- */
+
+.notice {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-m);
+}
+
+.notice--error {
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+}
+
+.notice__block + .notice__block {
+  margin-top: 12px;
+}
+
+.notice__title {
+  font-weight: 700;
+}
+
+.notice__file {
+  margin-top: 6px;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+}
+
+.notice__list {
+  margin-top: 6px;
+  padding-left: 20px;
+  list-style: disc;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+}
+
+/* ---------- Room dimensions ---------- */
+
+.room-details {
+  margin-top: 16px;
+  border: 1px solid var(--night-600);
+  border-radius: var(--radius-m);
+  background: var(--night-900);
+}
+
+.room-details__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: var(--tap);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.room-details__summary::-webkit-details-marker {
+  display: none;
+}
+
+.room-details__summary .chevron {
+  color: var(--cream-soft);
+  transition: rotate 0.15s ease;
+}
+
+.room-details[open] .room-details__summary .chevron {
+  rotate: 90deg;
+}
+
+/* ---------- Visible explanations of the badges ---------- */
+
+.aud-notes {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 16px;
+}
+
+.aud-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  color: var(--cream-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.aud-note .badge {
+  flex-shrink: 0;
+}
+
+.room-details__note {
+  padding: 0 16px 8px;
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+}
+
+.room-details__list {
+  margin: 0;
+  padding: 0 16px 12px;
+}
+
+.room-details__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 7px 0;
+  border-top: 1px solid var(--night-700);
+  font-size: 0.92rem;
+}
+
+.room-details__row dt {
+  color: var(--cream-soft);
+}
+
+.room-details__row dd {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.room-details__default {
+  margin-left: 8px;
+  color: var(--cream-faint);
+  font-size: 0.8rem;
+  font-weight: 400;
+}

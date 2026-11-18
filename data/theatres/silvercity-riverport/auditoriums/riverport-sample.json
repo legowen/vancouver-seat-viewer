@@ -1,0 +1,29 @@
+{
+  "id": "riverport-sample",
+  "theatreId": "silvercity-riverport",
+  "name": "Sample auditorium — replace with real seat map",
+  "type": "standard",
+  "placeholder": true,
+  "rows": [
+    { "label": "A", "seats": [null, null, 1, 2, 3, 4, null, null, null, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, null, null, null, 17, 18, 19, 20, null, null] },
+    { "label": "B", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "C", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "D", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "E", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "F", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "G", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "H", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "I", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "J", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "K", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "L", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "M", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "N", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "O", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] },
+    { "label": "P", "seats": [1, 2, 3, 4, 5, 6, null, null, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, null, null, 21, 22, 23, 24, 25, 26] }
+  ],
+  "entrance": "front-left",
+  "verified": false,
+  "source": "placeholder layout — not a real seat map",
+  "notes": "Made-up layout so the app has something to show. Replace it with a real auditorium: see docs/add-auditorium.md."
+}

@@ -1,0 +1,72 @@
+/*
+ * Design tokens.
+ * The look is a dim auditorium: cool indigo darkness, warm light from the wall sconces,
+ * velvet red for the seats. Rating-band colours are shared by the seat map, the legend,
+ * the info card and the 3D seat highlight (see src/config/rating.ts for the same values in JS).
+ */
+:root {
+  color-scheme: dark;
+
+  --night-950: #0b0a20;
+  --night-900: #110f2e;
+  --night-800: #19163f;
+  --night-700: #231f55;
+  --night-600: #322d73;
+  --night-500: #4c4699;
+
+  --cream: #f8f1e4;
+  --cream-soft: #cfc8e6;
+  --cream-faint: #a19bc9;
+
+  --sconce: #ffb866;
+  --sconce-strong: #ff9d47;
+  --velvet: #e0506a;
+  --velvet-deep: #b83a55;
+
+  --band-prime: #ffd166;
+  --band-recommended: #5cd8a6;
+  --band-ok: #72b7ff;
+  --band-meh: #9a96c4;
+  --band-avoid: #ff7385;
+
+  --danger-bg: #3a1630;
+  --danger-border: #a8456a;
+
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 22px;
+
+  --page-width: 720px;
+  /* Smallest comfortable touch target. */
+  --tap: 44px;
+
+  /*
+   * System fonts first: they are already on the device and cover Korean and Chinese well.
+   * Noto Sans KR / SC are named as fallbacks for systems that ship them instead (Android, Linux).
+   * No web font is downloaded.
+   */
+  --font-ui:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+}
+
+/* Put the fonts of the current language ahead of the other CJK fonts, so shared Han characters
+   are drawn in the right regional style. `:lang()` also matches each language-switcher button. */
+:lang(ko) {
+  --font-ui:
+    system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR',
+    'Noto Sans CJK KR', 'Segoe UI', Roboto, sans-serif;
+}
+
+:lang(zh-Hans) {
+  --font-ui:
+    system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC',
+    'Segoe UI', Roboto, sans-serif;
+}
+
+:lang(zh-Hant) {
+  --font-ui:
+    system-ui, -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Noto Sans TC',
+    'Noto Sans CJK TC', 'Segoe UI', Roboto, sans-serif;
+}

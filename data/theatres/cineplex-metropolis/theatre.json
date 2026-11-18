@@ -1,0 +1,9 @@
+{
+  "id": "cineplex-metropolis",
+  "name": "Cineplex Cinemas Metropolis",
+  "area": "Burnaby (Metrotown)",
+  "auditoriums": [
+    "metropolis-sample"
+  ],
+  "notes": "The name is best-effort. Correct it here if it is wrong."
+}

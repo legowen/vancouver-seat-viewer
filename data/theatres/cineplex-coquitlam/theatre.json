@@ -1,0 +1,9 @@
+{
+  "id": "cineplex-coquitlam",
+  "name": "Cineplex Cinemas Coquitlam",
+  "area": "Coquitlam",
+  "auditoriums": [
+    "coquitlam-sample"
+  ],
+  "notes": "The name is best-effort. Correct it here if it is wrong."
+}

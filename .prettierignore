@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage
+package-lock.json
+smoke-output
+# Vendored and agent-facing files keep their own formatting.
+.claude
+# Seat data is written one row per line on purpose (see src/data/format.ts).
+data

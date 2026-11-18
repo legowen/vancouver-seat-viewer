@@ -1,0 +1,20 @@
+{
+  "id": "marine-gateway-vip-sample",
+  "theatreId": "cineplex-marine-gateway",
+  "name": "Sample auditorium — replace with real seat map",
+  "type": "vip",
+  "placeholder": true,
+  "rows": [
+    { "label": "A", "seats": [1, 2, null, null, null, 3, 4, 5, 6, null, null, null, 7, 8] },
+    { "label": "B", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] },
+    { "label": "C", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] },
+    { "label": "D", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] },
+    { "label": "E", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] },
+    { "label": "F", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] },
+    { "label": "G", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, null, null, 9, 10] }
+  ],
+  "entrance": "back-left",
+  "verified": false,
+  "source": "placeholder layout — not a real seat map",
+  "notes": "Made-up layout so the app has something to show. Replace it with a real auditorium: see docs/add-auditorium.md."
+}

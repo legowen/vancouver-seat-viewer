@@ -1,0 +1,9 @@
+{
+  "id": "cineplex-vip-brentwood",
+  "name": "Cineplex VIP Cinemas Brentwood",
+  "area": "Burnaby (Brentwood)",
+  "auditoriums": [
+    "brentwood-vip-sample"
+  ],
+  "notes": "The name is best-effort. Correct it here if it is wrong."
+}

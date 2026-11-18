@@ -1,0 +1,74 @@
+[
+  {
+    "id": "the-cat-in-the-hat",
+    "title": "The Cat in the Hat",
+    "youtubeId": "pg6NLqUo6Bs",
+    "expectedChannel": "Warner Bros. UK & Ireland",
+    "foundAt": "https://www.youtube.com/watch?v=pg6NLqUo6Bs",
+    "release": "now playing (opened 2026-11-06)"
+  },
+  {
+    "id": "ebenezer",
+    "title": "Ebenezer",
+    "youtubeId": "xz8BPql5YnA",
+    "expectedChannel": "Paramount Pictures UK",
+    "foundAt": "https://www.youtube.com/watch?v=xz8BPql5YnA",
+    "release": "now playing (opened 2026-11-13)"
+  },
+  {
+    "id": "wild-horse-nine",
+    "title": "Wild Horse Nine",
+    "youtubeId": "Haw_sznA5aQ",
+    "expectedChannel": "Searchlight Pictures",
+    "foundAt": "https://m.youtube.com/watch?v=Haw_sznA5aQ&pp=0gcJCcUKAYcqIYzv",
+    "release": "now playing (opened 2026-11-06)"
+  },
+  {
+    "id": "the-hunger-games-sunrise-on-the-reaping",
+    "title": "The Hunger Games: Sunrise on the Reaping",
+    "youtubeId": "MPjxijuBuSo",
+    "expectedChannel": "Lionsgate Movies",
+    "foundAt": "https://www.youtube.com/watch?v=MPjxijuBuSo",
+    "release": "2026-11-20"
+  },
+  {
+    "id": "focker-in-law",
+    "title": "Focker-In-Law",
+    "youtubeId": "iqUpzsMnPeE",
+    "expectedChannel": "Universal Pictures",
+    "foundAt": "https://www.youtube.com/watch?v=iqUpzsMnPeE",
+    "release": "2026-11-25"
+  },
+  {
+    "id": "jumanji-open-world",
+    "title": "Jumanji: Open World",
+    "youtubeId": "nIw1O3zvOfE",
+    "expectedChannel": "Sony Pictures Entertainment",
+    "foundAt": "https://www.youtube.com/watch?v=nIw1O3zvOfE",
+    "release": "December 2026 (sources conflict: 2026-12-11 or Christmas Day)"
+  },
+  {
+    "id": "dune-part-three",
+    "title": "Dune: Part Three",
+    "youtubeId": "_k6RThkfv_c",
+    "expectedChannel": "Warner Bros. UK & Ireland",
+    "foundAt": "https://www.youtube.com/watch?v=_k6RThkfv_c",
+    "release": "2026-12-18"
+  },
+  {
+    "id": "the-angry-birds-movie-3",
+    "title": "The Angry Birds Movie 3",
+    "youtubeId": "jdBnS4HGQoA",
+    "expectedChannel": "Paramount Pictures UK",
+    "foundAt": "https://www.youtube.com/watch?v=jdBnS4HGQoA",
+    "release": "2026-12-23 (one schedule lists 2027-01-29)"
+  },
+  {
+    "id": "children-of-blood-and-bone",
+    "title": "Children of Blood and Bone",
+    "youtubeId": "4QYESVJkyuc",
+    "expectedChannel": "Paramount Pictures UK",
+    "foundAt": "https://www.youtube.com/watch?v=4QYESVJkyuc",
+    "release": "2027-01-15"
+  }
+]
