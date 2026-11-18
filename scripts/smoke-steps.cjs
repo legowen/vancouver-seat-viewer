@@ -263,6 +263,11 @@ module.exports = [
       await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/seats`);
       await page.locator('.seat-card__take').click();
       await page.waitForSelector('.seat-view.is-ready', { timeout: 30000 });
+      // The walk-in plays first; Skip cuts to the seat.
+      await page.waitForSelector('.seat-view.is-walking .view-skip:not([hidden])');
+      await shot(page, '06b-walk-in');
+      await page.click('.view-skip');
+      await page.waitForSelector('.seat-view:not(.is-walking)');
       const canvas = await page.locator('.stage__canvas').boundingBox();
       if (!canvas || canvas.width < 300 || canvas.height < 600) {
         throw new Error('the 3D canvas does not fill the screen');
@@ -325,7 +330,9 @@ module.exports = [
       await shot(page, '08b-seated-landscape');
       await page.setViewportSize({ width: 360, height: 740 });
 
-      // Escape leaves for the seat map.
+      // The reload replayed the walk-in: the first Escape skips it, the second leaves.
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('.seat-view:not(.is-walking)');
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => location.hash.includes('/seats'));
       // The hash changes before the app handles hashchange, so wait for the view to unmount.
@@ -334,6 +341,42 @@ module.exports = [
         throw new Error('canvas left behind');
       }
       await context.close();
+    },
+  },
+  {
+    name: 'walk-in: Escape skips, Replay walk, ends on its own, reduced motion',
+    async run({ baseUrl, openPage }) {
+      const { context, page } = await openPage();
+      await page.goto(`${baseUrl}#/t/cineplex-vip-brentwood/brentwood-vip-sample/view/D-7`);
+      await page.waitForSelector('.seat-view.is-walking');
+      if ((await text(page, '.view-walking')) !== 'Finding your seat…') {
+        throw new Error('walking status missing');
+      }
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('.seat-view:not(.is-walking)');
+      if (page.url().includes('/seats'))
+        throw new Error('Escape left the view instead of skipping');
+      const replay = page.locator('.view-replay');
+      if (await replay.isDisabled()) throw new Error('Replay walk disabled when seated');
+      await replay.click();
+      await page.waitForSelector('.seat-view.is-walking');
+      // Left alone, the walk-in ends by itself within about six seconds.
+      const started = Date.now();
+      await page.waitForSelector('.seat-view:not(.is-walking)', { timeout: 9000 });
+      const took = Date.now() - started;
+      if (took < 3000) throw new Error(`walk-in too short: ${took} ms`);
+      await context.close();
+
+      const reduced = await openPage({ reducedMotion: 'reduce' });
+      await reduced.page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/view/G-10`);
+      await reduced.page.waitForSelector('.seat-view.is-ready', { timeout: 30000 });
+      if ((await reduced.page.locator('.seat-view.is-walking').count()) !== 0) {
+        throw new Error('walk-in played despite reduced motion');
+      }
+      if ((await reduced.page.locator('.view-replay').count()) !== 0) {
+        throw new Error('Replay walk offered with reduced motion');
+      }
+      await reduced.context.close();
     },
   },
   {

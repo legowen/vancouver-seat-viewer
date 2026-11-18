@@ -10,7 +10,7 @@ import type { Auditorium } from '../data/resolve';
 import { computeLayout } from '../geometry/layout';
 import { t } from '../i18n';
 import { evaluateSeats } from '../metrics/seats';
-import type { SeatScene } from '../scene/seatScene';
+import type { ScenePhase, SeatScene } from '../scene/seatScene';
 import { auditoriumBadges, chevron } from './common';
 import { createLanguageSwitcher } from './languageSwitcher';
 import { renderMiniMap } from './miniMap';
@@ -28,6 +28,10 @@ const SHORT_SCREEN = '(max-height: 500px)';
 /** How long to wait for the browser to give a lost WebGL context back before giving up. */
 const RESTORE_WAIT_MS = 6000;
 
+function prefersReducedMotion(): boolean {
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function createSeatView(params: SeatViewParams): View {
   const { theatre, auditorium, seatId, videoId } = params;
   const layout = computeLayout(auditorium);
@@ -39,21 +43,26 @@ export function createSeatView(params: SeatViewParams): View {
   const stageEl = h('div', { class: 'stage', tabindex: '0', role: 'application' });
   const status = h('div', { class: 'stage__status', role: 'status' });
   const switcher = createLanguageSwitcher();
+  const skip = h('button', { type: 'button', class: 'pill pill--accent view-skip', hidden: true });
+  const walking = h('p', { class: 'view-walking', role: 'status', hidden: true });
   const topBar = h(
     'div',
     { class: 'view-top' },
+    skip,
     h('span', { class: 'view-top__spacer' }),
     switcher.el,
   );
   const recentre = h('button', { type: 'button', class: 'pill view-recentre', hidden: true });
   const card = h('section', { class: 'view-card' });
-  const el = h('div', { class: 'seat-view' }, stageEl, status, topBar, recentre, card);
+  const el = h('div', { class: 'seat-view' }, stageEl, status, topBar, walking, recentre, card);
 
   let scene: SeatScene | null = null;
   let destroyed = false;
   let collapsed = typeof matchMedia === 'function' && matchMedia(SHORT_SCREEN).matches;
   let failure: 'webgl' | 'seat' | null = evaluation ? null : 'seat';
   let restoreTimer = 0;
+  const reducedMotion = prefersReducedMotion();
+  let phase: ScenePhase = reducedMotion ? 'seated' : 'walking';
 
   const goToSeatMap = () => navigate(seatMapHref);
 
@@ -127,6 +136,19 @@ export function createSeatView(params: SeatViewParams): View {
         'div',
         { class: 'view-card__actions' },
         h('a', { class: 'btn btn--ghost', href: seatMapHref }, t('view.changeSeat')),
+        // With reduced motion there is no walk to replay.
+        reducedMotion
+          ? null
+          : h(
+              'button',
+              {
+                type: 'button',
+                class: 'btn btn--ghost view-replay',
+                disabled: phase === 'walking' || !scene,
+                onclick: () => scene?.replayWalk(),
+              },
+              t('view.replay'),
+            ),
       ),
     );
   }
@@ -134,6 +156,8 @@ export function createSeatView(params: SeatViewParams): View {
   /** Texts outside the card. The top bar itself is built once, so focus survives a language change. */
   function renderChrome(): void {
     recentre.textContent = t('view.recentre');
+    skip.textContent = t('view.skip');
+    walking.textContent = t('view.walking');
     stageEl.setAttribute(
       'aria-label',
       evaluation ? t('view.canvasLabel', { seat: seatName(evaluation.seat) }) : t('app.title'),
@@ -151,9 +175,28 @@ export function createSeatView(params: SeatViewParams): View {
   cardObserver.observe(card);
 
   recentre.addEventListener('click', () => scene?.recentre());
+  skip.addEventListener('click', () => scene?.skipWalk());
+
+  function setPhase(next: ScenePhase): void {
+    phase = next;
+    const isWalking = next === 'walking';
+    // Do not hide the Skip button while it has focus: hand focus to the view first.
+    if (!isWalking && document.activeElement === skip) stageEl.focus();
+    skip.hidden = !isWalking;
+    walking.hidden = !isWalking;
+    el.classList.toggle('is-walking', isWalking);
+    const replay = card.querySelector<HTMLButtonElement>('.view-replay');
+    if (replay) {
+      if (isWalking && document.activeElement === replay) skip.focus();
+      replay.disabled = isWalking;
+    }
+  }
 
   const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && !event.defaultPrevented) goToSeatMap();
+    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    // Escape first skips the walk, then leaves for the seat map.
+    if (phase === 'walking' && scene) scene.skipWalk();
+    else goToSeatMap();
   };
   document.addEventListener('keydown', onKey);
 
@@ -175,7 +218,10 @@ export function createSeatView(params: SeatViewParams): View {
           auditorium,
           layout,
           seatId,
+          videoId,
+          walkIn: !reducedMotion,
           bottomInset: card.getBoundingClientRect().height + 12,
+          onPhaseChange: setPhase,
           onTurnedChange: setTurned,
           onContextLost: () => {
             status.textContent = t('view.loading');
@@ -196,6 +242,8 @@ export function createSeatView(params: SeatViewParams): View {
       }
       status.textContent = '';
       el.classList.add('is-ready');
+      setPhase(scene.phase);
+      renderCard();
     } catch (error) {
       console.error(error);
       fail();

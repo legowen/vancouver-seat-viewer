@@ -60,6 +60,15 @@ One line each: the decision, then why. Newest at the bottom of each section.
 - A seat changed by a tap or an arrow button is announced through a live region (`seatmap.status`); a seat reached with the arrow keys is read from its own label with the verdict as its description, so nothing is read twice.
 - `seatmap.status` was translated by the main agent instead of the i18n-translator agent — the agent hit the account's usage limit, and it is one short string.
 
+## Walk-in
+
+- The avatar goes from the door along the front walkway (past the screen) or the back cross-aisle to the side aisle on the seat's side, then up or down that aisle, side-steps along the row facing the screen, and sits — the spec's path, using whichever side aisle is nearer the seat.
+- The walking part is squeezed into 2.6–4.1 s whatever the room size, then sitting (0.6 s) and the camera settling (1.1 s, overlapping) — the whole walk-in stays within 4–6 s as specified; on long paths the avatar runs (steps capped at 3.4 a second, leaning forward) instead of walking at an impossible stride.
+- The follow camera stays behind (towards the back of the room) and above the avatar and looks at it with the screen beyond — the room, the audience and the screen stay in view; it then blends into the seated pose (position lerp + quaternion slerp).
+- The avatar and the arrow over the target seat hide as soon as the camera comes within 1.4 m — the camera never passes through them.
+- Escape first skips the walk-in, and only a second Escape leaves for the seat map; Replay walk is not offered with reduced motion, where the view always starts seated.
+- The screen shows the trailer's `hqdefault.jpg` letterboxed to the screen's shape, loaded with `crossOrigin = "anonymous"`; if it does not load within 8 s or cannot be used as a texture, the plain glowing screen stays.
+
 ## Internationalisation
 
 - Locale files are discovered with `import.meta.glob('./locales/*.json')` and each carries its own switcher label in `meta.languageName` — adding `zh-Hant.json` needs no code change.
