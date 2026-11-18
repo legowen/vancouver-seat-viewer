@@ -120,6 +120,96 @@ module.exports = [
     },
   },
   {
+    name: 'seated view: 3D room, drag to look, recentre, language, back',
+    async run({ baseUrl, openPage, shot, expectNoOverflow }) {
+      const { context, page } = await openPage();
+      await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}`);
+      await page.locator('.best-seat a.btn').click();
+      await page.waitForSelector('.seat-view.is-ready', { timeout: 30000 });
+      const canvas = await page.locator('.stage__canvas').boundingBox();
+      if (!canvas || canvas.width < 300 || canvas.height < 600) {
+        throw new Error('the 3D canvas does not fill the screen');
+      }
+      const seat = await text(page, '.view-card__seat');
+      if (!/^Row [A-Z]+, Seat \d+$/.test(seat)) throw new Error(`odd seat name: ${seat}`);
+      if (!(await text(page, '.view-card__numbers')).includes('Viewing angle')) {
+        throw new Error('metrics missing from the card');
+      }
+      await expectNoOverflow(page, 'seated view');
+      await shot(page, '07-seated-en');
+
+      // Drag to look turns the view; Recentre brings it back.
+      await page.mouse.move(canvas.x + 120, canvas.y + 200);
+      await page.mouse.down();
+      await page.mouse.move(canvas.x + 300, canvas.y + 230, { steps: 6 });
+      await page.mouse.up();
+      await page.waitForSelector('.view-recentre:not([hidden])');
+      await page.click('.view-recentre');
+      await page.waitForSelector('.view-recentre[hidden]', { state: 'attached' });
+
+      // Arrow keys look around too.
+      await page.focus('.stage');
+      await page.keyboard.press('ArrowLeft');
+      await page.waitForSelector('.view-recentre:not([hidden])');
+
+      // The language switcher works inside the full-screen view without rebuilding the scene.
+      await page.getByRole('button', { name: '한국어' }).click();
+      if ((await page.getAttribute('html', 'lang')) !== 'ko') throw new Error('lang is not ko');
+      if ((await text(page, '.view-card__seat')) === seat) throw new Error('card not translated');
+      if ((await page.locator('.stage__canvas').count()) !== 1)
+        throw new Error('scene was rebuilt');
+      await expectNoOverflow(page, 'seated view (ko)');
+      await shot(page, '08-seated-ko');
+
+      // The card folds away and comes back, and keyboard focus stays on the toggle.
+      await page.focus('.view-card__toggle');
+      await page.keyboard.press('Enter');
+      await page.waitForSelector('.view-card.is-collapsed');
+      await page.keyboard.press('Enter');
+      await page.waitForSelector('.view-card:not(.is-collapsed) .view-card__verdict');
+      const toggleFocused = await page.evaluate(() =>
+        document.activeElement?.classList.contains('view-card__toggle'),
+      );
+      if (!toggleFocused) throw new Error('focus lost after toggling the card');
+
+      // Keyboard focus also survives a language change.
+      await page.getByRole('button', { name: 'EN', exact: true }).focus();
+      await page.keyboard.press('Enter');
+      const langFocused = await page.evaluate(() => document.activeElement?.textContent);
+      if (langFocused !== 'EN') throw new Error('focus lost after switching language');
+
+      // A landscape phone starts with the card folded so the screen stays visible.
+      await page.setViewportSize({ width: 740, height: 360 });
+      await page.reload();
+      await page.waitForSelector('.seat-view.is-ready', { timeout: 30000 });
+      if ((await page.locator('.view-card.is-collapsed').count()) !== 1) {
+        throw new Error('card not folded on a landscape phone');
+      }
+      await shot(page, '08b-seated-landscape');
+      await page.setViewportSize({ width: 360, height: 740 });
+
+      // Escape leaves for the seat map.
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => location.hash.includes('/seats'));
+      // The hash changes before the app handles hashchange, so wait for the view to unmount.
+      await page.waitForSelector('.seat-view', { state: 'detached' });
+      if ((await page.locator('.stage__canvas').count()) !== 0) {
+        throw new Error('canvas left behind');
+      }
+      await context.close();
+    },
+  },
+  {
+    name: 'seated view handles an unknown seat',
+    async run({ baseUrl, openPage }) {
+      const { context, page } = await openPage();
+      await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/view/Z-99`);
+      await page.waitForSelector('.view-card__error');
+      if ((await page.locator('.view-card a.btn').count()) !== 1) throw new Error('no way back');
+      await context.close();
+    },
+  },
+  {
     name: 'unknown routes and ids show a way back',
     async run({ baseUrl, openPage }) {
       const { context, page } = await openPage();

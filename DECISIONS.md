@@ -28,6 +28,21 @@ One line each: the decision, then why. Newest at the bottom of each section.
 - In the compact format an aisle (`|`) is two seat widths by default and blocks are aligned so aisles run straight — a one-seat-wide aisle looks wrong in 3D; both are options of the parser.
 - The compact parser normalises full-width punctuation and digits (NFKC) — Korean and Chinese keyboards type `：` and `｜` by default.
 
+## Seat metrics and the 3D view
+
+- The off-axis angle is measured in the horizontal plane, `atan(|x| / z)` — the spec's "line to the screen centre vs. the screen normal" also counts height, which would label front-row seats with a "side angle" verdict; height is covered by the separate look-up angle.
+- The best seat (where the seat map starts) is the lowest score of band rank, then side angle, then distance from a 50° viewing angle, then look-up angle — a central prime seat wins, as the reference UX expects.
+- The seated camera keeps an 80° horizontal field of view on every device, and caps the vertical field at 95° on tall phones — the screen then takes the same share of the display for the same seat everywhere, so seats can be compared.
+- The bottom card shifts the camera's aim point with a view offset instead of tilting the camera — the camera still aims at the screen centre (as the spec says) but the centre appears in the middle of the uncovered area.
+- Frames are rendered on demand (the loop stops when nothing moves) — a still seated view then costs no battery on a phone.
+- About 60 % of seats in the rows in front look taken, drawn from a generator seeded with the auditorium and seat ids — the same people sit in the same places whichever seat you pick; the viewer's row and the rows behind stay empty (out of sight once seated, and the walk-in path stays clear).
+- Seats, steps, sconces and heads are InstancedMeshes; seat and head shapes are boxes and spheres merged into one geometry each — about 20 draw calls for a whole room.
+- Lighting is a hemisphere fill plus one point light standing in for the screen; the sconce glows are additive textured planes, not lights — every real light adds cost to every lit pixel on a phone.
+- Until the seat map exists (Milestone 3), its route shows the auditorium page with a "Take this seat" button for the best seat — so Milestone 2 has a working path into the 3D view.
+- On short screens (landscape phones, height ≤ 500 px) the seated view's card starts folded and drops the mini map — otherwise it would cover most of the 3D view.
+- A lost WebGL context waits up to 6 s for the browser to restore it before showing the "can't show the 3D view" message — phones drop contexts under memory pressure and usually give them back.
+- The 3D stage has `role="application"` — screen readers then pass the arrow keys through for looking around.
+
 ## Internationalisation
 
 - Locale files are discovered with `import.meta.glob('./locales/*.json')` and each carries its own switcher label in `meta.languageName` — adding `zh-Hant.json` needs no code change.

@@ -1,11 +1,13 @@
 /** The app shell: header with the language switcher, the current screen, and the footer. */
 import { findAuditorium, findTheatre, type Catalog } from '../data/catalog';
 import { loadCatalog } from '../data/loader';
+import { YOUTUBE_ID_PATTERN } from '../data/schema';
 import { initI18n, onLocaleChange, t, type MessageKey } from '../i18n';
 import { createAuditoriumView } from '../ui/auditoriumView';
 import { backLink, brokenAuditoriumNotice, messagePage, theatreName } from '../ui/common';
 import { createHomeView } from '../ui/homeView';
 import { createLanguageSwitcher } from '../ui/languageSwitcher';
+import { createSeatView } from '../ui/seatView';
 import { createTheatreView } from '../ui/theatreView';
 import { h, mount, s } from './dom';
 import { parseHash, routes, type Route } from './router';
@@ -41,7 +43,15 @@ function resolveView(route: Route, catalog: Catalog): View {
         title: () => t('app.errorTitle'),
       };
     }
-    if (!step) return createAuditoriumView(theatre, entry.auditorium);
+    // Until the seat map exists, its route shows the auditorium page with the best seat.
+    if (!step || step === 'seats') return createAuditoriumView(theatre, entry.auditorium);
+
+    const video = route.query.get('v');
+    const videoId = video && YOUTUBE_ID_PATTERN.test(video) ? video : null;
+    const seatId = route.path[4];
+    if (step === 'view' && seatId) {
+      return createSeatView({ theatre, auditorium: entry.auditorium, seatId, videoId });
+    }
   }
 
   return messageView('app.notFound', routes.home(), 'app.theatreList');

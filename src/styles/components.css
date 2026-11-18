@@ -419,3 +419,94 @@
   font-size: 0.8rem;
   font-weight: 400;
 }
+
+/* ---------- Best seat ---------- */
+
+.best-seat {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 16px;
+  padding: 16px;
+  border: 1px solid var(--night-600);
+  border-radius: var(--radius-m);
+  background: var(--night-700);
+}
+
+.best-seat__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.best-seat__name {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.best-seat__verdict {
+  font-weight: 600;
+}
+
+.best-seat__numbers {
+  margin-bottom: 6px;
+  color: var(--cream-soft);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Rating band chip and coloured mini map ---------- */
+
+.band-chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--chip, var(--band-meh));
+  color: var(--night-950);
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.band-chip--prime {
+  --chip: var(--band-prime);
+}
+
+.band-chip--recommended {
+  --chip: var(--band-recommended);
+}
+
+.band-chip--ok {
+  --chip: var(--band-ok);
+}
+
+.band-chip--meh {
+  --chip: var(--band-meh);
+}
+
+.band-chip--avoid {
+  --chip: var(--band-avoid);
+}
+
+.mini-map .seat-band--prime {
+  fill: var(--band-prime);
+}
+
+.mini-map .seat-band--recommended {
+  fill: var(--band-recommended);
+}
+
+.mini-map .seat-band--ok {
+  fill: var(--band-ok);
+}
+
+.mini-map .seat-band--meh {
+  fill: var(--band-meh);
+}
+
+.mini-map .seat-band--avoid {
+  fill: var(--band-avoid);
+}

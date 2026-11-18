@@ -1,6 +1,5 @@
 {
   "meta.languageName": "EN",
-
   "app.title": "Vancouver Seat Viewer",
   "app.tagline": "See the view before you book.",
   "app.disclaimer": "Unofficial fan project — not affiliated with Cineplex Entertainment.",
@@ -10,13 +9,11 @@
   "app.theatreList": "All theatres",
   "app.notFound": "This page doesn't exist.",
   "app.errorTitle": "Something went wrong",
-
   "home.heading": "Pick a theatre",
   "home.intro": "Choose a theatre, an auditorium and a seat. Then sit down and see the screen from there.",
   "home.auditoriums.one": "{count} auditorium",
   "home.auditoriums.other": "{count} auditoriums",
   "home.empty": "No theatres are set up yet. Add one to data/theatres.json.",
-
   "theatre.heading": "Pick an auditorium",
   "theatre.hint": "Match the seat map with the one on your Cineplex booking page.",
   "theatre.seats.one": "{count} seat",
@@ -25,18 +22,15 @@
   "theatre.rows.other": "{count} rows",
   "theatre.empty": "This theatre has no auditoriums yet. See docs/add-auditorium.md to add one.",
   "theatre.thumbnailAlt": "Seat map of {name}",
-
   "type.standard": "Standard",
   "type.vip": "VIP",
   "size.small": "Small",
   "size.medium": "Medium",
   "size.large": "Large",
-
   "badge.estimated": "Estimated dimensions",
   "badge.estimatedHint": "Room sizes are defaults, not measured here, so distances and angles are approximate.",
   "badge.sample": "Sample layout",
   "badge.sampleHint": "Not a real seat map. Replace it with the real auditorium.",
-
   "trailer.heading": "Pick a trailer",
   "trailer.intro": "It plays on the screen once you sit down.",
   "trailer.listHeading": "In theatres now or coming soon",
@@ -49,7 +43,6 @@
   "trailer.errorEmpty": "Paste a YouTube link first.",
   "trailer.errorInvalid": "That isn't a YouTube video link. Try one like youtube.com/watch?v=… or youtu.be/…",
   "trailer.change": "Change trailer",
-
   "seat.name": "Row {row}, Seat {seat}",
   "seatmap.heading": "Pick a seat and sit down",
   "seatmap.screen": "Screen",
@@ -62,13 +55,11 @@
   "seatmap.nudgeRight": "Seat to the right",
   "seatmap.nudgeUp": "Row closer to the screen",
   "seatmap.nudgeDown": "Row further back",
-
   "band.prime": "Prime",
   "band.recommended": "Recommended",
   "band.ok": "OK",
   "band.meh": "Meh",
   "band.avoid": "Avoid",
-
   "verdict.prime": "The screen fills your view",
   "verdict.recommended": "Comfortable, you see everything",
   "verdict.ok": "Easy to take in, a little distant",
@@ -78,13 +69,11 @@
   "verdict.avoidSide": "Strong side angle",
   "verdict.offAxis": "Good distance, but off to the side",
   "verdict.mehOffAxis": "Far away and off to the side",
-
-  "metric.summary": "Distance {distance} · Viewing angle {angle}",
+  "metric.summary": "Distance {distance} · Viewing angle {angle}",
   "metric.distance": "Distance",
   "metric.viewingAngle": "Viewing angle",
   "metric.offAxis": "Off-centre",
   "metric.vertical": "Look-up angle",
-
   "view.loading": "Building the auditorium…",
   "view.walking": "Finding your seat…",
   "view.skip": "Skip",
@@ -106,12 +95,10 @@
   "view.videoBlocked": "YouTube doesn't allow this video to play on other sites. Open it on YouTube instead.",
   "view.webglError": "This device can't show the 3D view. Seat ratings still work on the seat map.",
   "view.seatNotFound": "That seat isn't in this auditorium. Pick one on the seat map.",
-
   "error.theatreNotFound": "That theatre isn't in the list.",
   "error.auditoriumNotFound": "That auditorium isn't in this theatre.",
   "error.auditoriumInvalid": "This auditorium's file has a problem, so it can't be shown.",
   "error.fileInvalid": "{file} has a problem:",
-
   "editor.heading": "Auditorium editor",
   "editor.intro": "Paste a compact seat map, tune the dimensions, check both previews, then download the JSON.",
   "editor.text": "Compact seat map",
@@ -155,7 +142,6 @@
   "editor.errorsHeading": "Fix these lines first",
   "editor.lineError": "Line {line}: {message}",
   "editor.idInvalid": "Give the auditorium an id before downloading.",
-
   "compact.missingColon": "Put a colon after the row label, like A: 1-10",
   "compact.badLabel": "The row label must be 1 to 4 characters",
   "compact.badToken": "Can't read “{token}”. Use numbers, ranges like 1-10, | or _",
