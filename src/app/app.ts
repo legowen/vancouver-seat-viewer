@@ -3,12 +3,13 @@ import { findAuditorium, findTheatre, type Catalog } from '../data/catalog';
 import { loadCatalog } from '../data/loader';
 import { YOUTUBE_ID_PATTERN } from '../data/schema';
 import { initI18n, onLocaleChange, t, type MessageKey } from '../i18n';
-import { createAuditoriumView } from '../ui/auditoriumView';
 import { backLink, brokenAuditoriumNotice, messagePage, theatreName } from '../ui/common';
 import { createHomeView } from '../ui/homeView';
 import { createLanguageSwitcher } from '../ui/languageSwitcher';
+import { createSeatMapView } from '../ui/seatMapView';
 import { createSeatView } from '../ui/seatView';
 import { createTheatreView } from '../ui/theatreView';
+import { createTrailerView } from '../ui/trailerView';
 import { h, mount, s } from './dom';
 import { parseHash, routes, type Route } from './router';
 import type { View } from './view';
@@ -43,12 +44,20 @@ function resolveView(route: Route, catalog: Catalog): View {
         title: () => t('app.errorTitle'),
       };
     }
-    // Until the seat map exists, its route shows the auditorium page with the best seat.
-    if (!step || step === 'seats') return createAuditoriumView(theatre, entry.auditorium);
+    if (!step) return createTrailerView(theatre, entry.auditorium, catalog.movies);
 
     const video = route.query.get('v');
     const videoId = video && YOUTUBE_ID_PATTERN.test(video) ? video : null;
     const seatId = route.path[4];
+    if (step === 'seats') {
+      return createSeatMapView({
+        theatre,
+        auditorium: entry.auditorium,
+        videoId,
+        seatId: route.query.get('seat'),
+        movies: catalog.movies,
+      });
+    }
     if (step === 'view' && seatId) {
       return createSeatView({ theatre, auditorium: entry.auditorium, seatId, videoId });
     }

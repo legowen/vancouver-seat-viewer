@@ -43,6 +43,9 @@
   "trailer.errorEmpty": "Paste a YouTube link first.",
   "trailer.errorInvalid": "That isn't a YouTube video link. Try one like youtube.com/watch?v=… or youtu.be/…",
   "trailer.change": "Change trailer",
+  "trailer.selected": "Trailer: {title}",
+  "trailer.yourVideo": "your YouTube link",
+  "trailer.none": "No trailer",
   "seat.name": "Row {row}, Seat {seat}",
   "seatmap.heading": "Pick a seat and sit down",
   "seatmap.screen": "Screen",
@@ -50,6 +53,7 @@
   "seatmap.seatAria": "Row {row}, Seat {seat}, {band}",
   "seatmap.legend": "Seat ratings",
   "seatmap.preselected": "You start on the best-rated seat. Tap any seat to compare.",
+  "seatmap.status": "{seat}, {band}. {verdict}",
   "seatmap.take": "Take this seat",
   "seatmap.nudgeLeft": "Seat to the left",
   "seatmap.nudgeRight": "Seat to the right",
@@ -149,6 +153,7 @@
   "compact.duplicateSeat": "Seat {seat} appears twice in this row",
   "compact.duplicateRow": "Row {row} appears twice",
   "compact.tooManySeats": "A row can have at most {max} seats",
+  "compact.tooWide": "This row is too wide once the aisles are lined up (at most {max} places)",
   "compact.tooManyRows": "An auditorium can have at most {max} rows",
   "compact.badRange": "{token} is not a valid range"
 }

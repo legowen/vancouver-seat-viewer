@@ -43,6 +43,9 @@
   "trailer.errorEmpty": "请先粘贴 YouTube 链接。",
   "trailer.errorInvalid": "这不是 YouTube 视频链接。请使用 youtube.com/watch?v=… 或 youtu.be/… 这样的链接。",
   "trailer.change": "更换预告片",
+  "trailer.selected": "预告片：{title}",
+  "trailer.yourVideo": "你的 YouTube 链接",
+  "trailer.none": "无预告片",
   "seat.name": "{row}排{seat}座",
   "seatmap.heading": "选好座位，坐下看看",
   "seatmap.screen": "银幕",
@@ -50,6 +53,7 @@
   "seatmap.seatAria": "{row}排{seat}座，{band}",
   "seatmap.legend": "座位评级",
   "seatmap.preselected": "已默认选中评级最高的座位，点按任意座位即可比较。",
+  "seatmap.status": "{seat}，{band}。{verdict}",
   "seatmap.take": "坐这个座位",
   "seatmap.nudgeLeft": "左侧座位",
   "seatmap.nudgeRight": "右侧座位",
@@ -149,6 +153,7 @@
   "compact.duplicateSeat": "{seat} 号座位在这一排出现了两次",
   "compact.duplicateRow": "{row}排出现了两次",
   "compact.tooManySeats": "每排最多 {max} 个座位",
+  "compact.tooWide": "对齐过道后，这一排太宽了（最多 {max} 格）",
   "compact.tooManyRows": "每个影厅最多 {max} 排",
   "compact.badRange": "{token} 不是有效的范围"
 }

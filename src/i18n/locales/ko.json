@@ -43,6 +43,9 @@
   "trailer.errorEmpty": "먼저 YouTube 링크를 붙여 넣어 주세요.",
   "trailer.errorInvalid": "YouTube 동영상 링크가 아니에요. youtube.com/watch?v=… 또는 youtu.be/… 형식으로 넣어 주세요.",
   "trailer.change": "예고편 변경",
+  "trailer.selected": "예고편: {title}",
+  "trailer.yourVideo": "내 YouTube 링크",
+  "trailer.none": "예고편 없음",
   "seat.name": "{row}열 {seat}번",
   "seatmap.heading": "좌석을 골라 앉아 보세요",
   "seatmap.screen": "스크린",
@@ -50,6 +53,7 @@
   "seatmap.seatAria": "{row}열 {seat}번, {band}",
   "seatmap.legend": "좌석 평가",
   "seatmap.preselected": "평가가 가장 좋은 좌석이 먼저 선택돼 있어요. 다른 좌석을 눌러 비교해 보세요.",
+  "seatmap.status": "{seat}, {band}. {verdict}",
   "seatmap.take": "이 좌석에 앉기",
   "seatmap.nudgeLeft": "왼쪽 좌석",
   "seatmap.nudgeRight": "오른쪽 좌석",
@@ -149,6 +153,7 @@
   "compact.duplicateSeat": "이 열에 {seat}번 좌석이 두 번 나와요",
   "compact.duplicateRow": "{row}열이 두 번 나와요",
   "compact.tooManySeats": "한 열에는 좌석을 최대 {max}개까지 넣을 수 있어요",
+  "compact.tooWide": "통로를 정렬하면 이 열이 너무 길어져요(최대 {max}칸)",
   "compact.tooManyRows": "한 상영관에는 최대 {max}열까지 넣을 수 있어요",
   "compact.badRange": "올바른 범위가 아니에요: {token}"
 }

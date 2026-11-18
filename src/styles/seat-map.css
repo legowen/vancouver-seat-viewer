@@ -1,0 +1,480 @@
+/* ---------- Trailer picker ---------- */
+
+.trailer-section {
+  margin-top: 8px;
+}
+
+.trailer-section__note {
+  margin: 6px 0 4px;
+  color: var(--cream-soft);
+}
+
+.movies {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.movie {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--night-600);
+  border-radius: var(--radius-m);
+  background: var(--night-700);
+  text-decoration: none;
+}
+
+.movie:hover {
+  border-color: var(--sconce);
+}
+
+.movie__frame {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(185 198 255 / 0.18), transparent 70%), var(--night-900);
+}
+
+.movie__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.movie__title {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.movie__channel {
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+}
+
+.paste {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.field__label {
+  font-weight: 600;
+}
+
+.field__input {
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--night-500);
+  border-radius: 12px;
+  background: var(--night-900);
+  /* 16 px keeps iOS from zooming into the field. */
+  font-size: 1rem;
+}
+
+.field__input::placeholder {
+  color: var(--cream-faint);
+  opacity: 0.7;
+}
+
+.field__input:focus-visible {
+  outline: 3px solid var(--sconce);
+  outline-offset: 1px;
+}
+
+.field__input[aria-invalid='true'] {
+  border-color: var(--band-avoid);
+}
+
+.field__help {
+  color: var(--cream-faint);
+  font-size: 0.84rem;
+}
+
+.field__error {
+  color: var(--band-avoid);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.paste .btn {
+  margin-top: 6px;
+}
+
+.trailer-skip {
+  margin: 16px 0 8px;
+}
+
+/* ---------- Seat map ---------- */
+
+.page--seatmap .page__title {
+  font-size: clamp(1.4rem, 5.6vw, 2rem);
+}
+
+.seatmap-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin-bottom: 10px;
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.seatmap-context__room {
+  flex-basis: 100%;
+  color: var(--cream);
+  font-weight: 700;
+}
+
+.seatmap-context__trailer {
+  color: var(--sconce);
+}
+
+.seatmap {
+  --label: 1.6em;
+  max-width: calc(var(--cells) * 30px + 2 * var(--label) + 12px);
+  margin: 4px auto 10px;
+  padding: 18px 6px 14px;
+  border: 1px solid var(--night-700);
+  border-radius: var(--radius-l);
+  background: var(--night-900);
+}
+
+.seatmap__screen-line,
+.seatmap__line {
+  display: grid;
+  grid-template-columns: var(--label) minmax(0, 1fr) var(--label);
+  align-items: center;
+}
+
+.seatmap__screen-area {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+
+.seatmap__screen {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--cream);
+  box-shadow:
+    0 0 16px 2px rgb(185 198 255 / 0.45),
+    0 8px 26px rgb(185 198 255 / 0.25);
+}
+
+.seatmap__screen-label {
+  color: var(--cream-faint);
+  font-size: 0.74rem;
+}
+
+.seatmap__grid {
+  display: grid;
+}
+
+.seatmap__seats {
+  position: relative;
+  aspect-ratio: var(--cells) / 1;
+}
+
+.seatmap__label {
+  color: var(--cream-faint);
+  font-size: 0.66rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.seat {
+  --seat: var(--band-meh);
+  position: absolute;
+  top: 0;
+  left: calc(var(--x) * 100% / var(--cells));
+  width: calc(100% / var(--cells));
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Percent insets of an absolute child are relative to the seat itself (padding would use the
+   width of the whole row). */
+.seat::before {
+  content: '';
+  position: absolute;
+  inset: 9%;
+  border-radius: 32% 32% 16% 16%;
+  background: var(--seat);
+}
+
+.seat--prime {
+  --seat: var(--band-prime);
+}
+
+.seat--recommended {
+  --seat: var(--band-recommended);
+}
+
+.seat--ok {
+  --seat: var(--band-ok);
+}
+
+.seat--meh {
+  --seat: var(--band-meh);
+}
+
+.seat--avoid {
+  --seat: var(--band-avoid);
+}
+
+/* Shapes as well as colours: a dot on prime seats, a slash through seats to avoid. */
+.seat--prime::after {
+  content: '';
+  position: absolute;
+  top: 38%;
+  left: 38%;
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: rgb(11 10 32 / 0.55);
+}
+
+.seat--avoid::after {
+  content: '';
+  position: absolute;
+  top: 45%;
+  left: 20%;
+  right: 20%;
+  height: 10%;
+  border-radius: 1px;
+  background: rgb(11 10 32 / 0.6);
+  rotate: -45deg;
+}
+
+.seat[aria-selected='true'] {
+  z-index: 1;
+}
+
+.seat[aria-selected='true']::before {
+  box-shadow:
+    0 0 0 2px var(--night-900),
+    0 0 0 4px var(--cream);
+  scale: 1.2;
+}
+
+.seat:focus-visible {
+  outline: none;
+}
+
+.seat:focus-visible::before {
+  box-shadow:
+    0 0 0 2px var(--night-900),
+    0 0 0 5px var(--sconce);
+}
+
+.seatmap-hint {
+  margin-bottom: 10px;
+  color: var(--cream-faint);
+  font-size: 0.86rem;
+  text-align: center;
+}
+
+.legend {
+  margin: 6px 0 14px;
+}
+
+.legend__title {
+  margin-bottom: 6px;
+  color: var(--cream-soft);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.legend__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+}
+
+.legend__swatch.seat {
+  position: relative;
+  top: auto;
+  left: auto;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  cursor: default;
+}
+
+/* ---------- Selected seat card (stays in reach at the bottom) ---------- */
+
+.seat-card {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  gap: 6px;
+  margin: 0 -16px;
+  padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgb(248 241 228 / 0.14);
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+  background: var(--night-900);
+  box-shadow: 0 -12px 28px rgb(7 6 15 / 0.55);
+}
+
+@media (min-width: 600px) {
+  .seat-card {
+    bottom: 12px;
+    margin: 0;
+    border: 1px solid rgb(248 241 228 / 0.14);
+    border-radius: var(--radius-l);
+  }
+}
+
+.seat-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.seat-card__seat {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.seat-card__verdict {
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.metric {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 8px;
+  font-size: 0.88rem;
+}
+
+.metric dt {
+  color: var(--cream-soft);
+}
+
+.metric dd {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+@media (min-width: 560px) {
+  .metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .metric {
+    flex-direction: column;
+  }
+}
+
+.seat-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.nudges {
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* Landscape phones: a sticky card would cover most of the map, so it scrolls with the page. */
+@media (max-height: 500px) {
+  .seat-card {
+    position: static;
+    margin: 12px 0 0;
+    border: 1px solid rgb(248 241 228 / 0.14);
+    border-radius: var(--radius-l);
+    box-shadow: none;
+  }
+}
+
+/* Windows contrast themes drop background colours and shadows: draw seats with borders and
+   system colours instead, and mark the selection and focus with outlines. */
+@media (forced-colors: active) {
+  .seat::before {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  .seat--prime::after,
+  .seat--avoid::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .seat[aria-selected='true']::before {
+    border-color: Highlight;
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .seat:focus-visible::before {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .seatmap__screen {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .band-chip {
+    border: 1px solid CanvasText;
+  }
+}
+
+.nudge {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: var(--tap);
+  border: 1px solid var(--night-500);
+  border-radius: 12px;
+  background: var(--night-800);
+}
+
+.nudge:hover {
+  border-color: var(--sconce);
+}
+
+/* Next to the arrows when there is room, otherwise on its own full-width line. */
+.seat-card__take {
+  flex: 1 1 140px;
+  min-height: var(--tap);
+  padding: 8px 14px;
+}

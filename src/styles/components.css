@@ -420,41 +420,6 @@
   font-weight: 400;
 }
 
-/* ---------- Best seat ---------- */
-
-.best-seat {
-  display: grid;
-  gap: 8px;
-  margin: 8px 0 16px;
-  padding: 16px;
-  border: 1px solid var(--night-600);
-  border-radius: var(--radius-m);
-  background: var(--night-700);
-}
-
-.best-seat__head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 10px;
-}
-
-.best-seat__name {
-  font-size: 1.1rem;
-  font-weight: 800;
-}
-
-.best-seat__verdict {
-  font-weight: 600;
-}
-
-.best-seat__numbers {
-  margin-bottom: 6px;
-  color: var(--cream-soft);
-  font-size: 0.9rem;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---------- Rating band chip and coloured mini map ---------- */
 
 .band-chip {

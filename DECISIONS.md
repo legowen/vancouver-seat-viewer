@@ -43,6 +43,23 @@ One line each: the decision, then why. Newest at the bottom of each section.
 - A lost WebGL context waits up to 6 s for the browser to restore it before showing the "can't show the 3D view" message — phones drop contexts under memory pressure and usually give them back.
 - The 3D stage has `role="application"` — screen readers then pass the arrow keys through for looking around.
 
+## Trailer step and seat map
+
+- The trailer picker lives at the auditorium's own route (`#/t/<theatre>/<auditorium>`), before the seat map — the spec's flow is theatre → auditorium → trailer → seat; the Milestone 2 best-seat card is gone because the seat map now starts on the best seat.
+- A pasted link must be one of the four forms in the spec (watch, youtu.be, shorts, embed; with or without `https://`, `www.` or `m.`); bare ids, live links, playlists and other hosts are rejected — the spec says to reject anything else.
+- The paste field is a text field with `inputmode="url"` and no browser validation — so links copied without `https://` are accepted.
+- The seat map is an ARIA grid with one tab stop (the selected seat): arrow keys move, Home/End go to the ends of the row, Enter takes the seat — the APG grid pattern, with seat labels "Row K, Seat 23, Prime".
+- A tap in a gap selects the nearest seat within 1.5 seat widths, and four nudge buttons move by one seat or row — seats are only about 10 px wide on a 360 px phone.
+- Moving up or down a row picks the closest seat sideways, and on a tie the one further from the centre — so moving along the ends of the rows stays at the ends on both sides.
+- Bands also differ in shape, not only colour: a dot on prime seats, a slash through seats to avoid.
+- The selected seat is written into the address with `history.replaceState` — Back from the 3D view and a reload return to it, without adding a history entry per tap.
+- The seat card sticks to the bottom of the screen on phones, and the "Take this seat" button drops to its own full-width line when it would not fit next to the arrows.
+- Movie thumbnails in the trailer list load straight from `i.ytimg.com`; one that fails to load is removed instead of showing a broken image.
+- The seat card is built once and only its texts change, so a pressed arrow button keeps keyboard focus; while the card sticks to the bottom, `scroll-padding-bottom` keeps a focused or nudged seat from hiding under it, and on short screens (≤ 500 px tall) the card scrolls with the page instead of sticking.
+- Windows contrast themes (forced colours) get seats with borders and system colours, and the selection and focus as outlines — otherwise the map would be blank there.
+- A seat changed by a tap or an arrow button is announced through a live region (`seatmap.status`); a seat reached with the arrow keys is read from its own label with the verdict as its description, so nothing is read twice.
+- `seatmap.status` was translated by the main agent instead of the i18n-translator agent — the agent hit the account's usage limit, and it is one short string.
+
 ## Internationalisation
 
 - Locale files are discovered with `import.meta.glob('./locales/*.json')` and each carries its own switcher label in `meta.languageName` — adding `zh-Hant.json` needs no code change.

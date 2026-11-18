@@ -120,11 +120,148 @@ module.exports = [
     },
   },
   {
-    name: 'seated view: 3D room, drag to look, recentre, language, back',
+    name: 'trailer picker: paste a link, errors, continue without',
     async run({ baseUrl, openPage, shot, expectNoOverflow }) {
       const { context, page } = await openPage();
       await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}`);
-      await page.locator('.best-seat a.btn').click();
+      await page.waitForSelector('form.paste');
+      if ((await text(page, 'h1')) !== 'Pick a trailer') throw new Error('wrong heading');
+      // No verified trailers ship yet, so the paste form is the main path.
+      if ((await page.locator('.trailer-section__note').count()) !== 1) {
+        throw new Error('the empty-list note is missing');
+      }
+      await page.click('form.paste button[type=submit]');
+      await page
+        .locator('.field__error', { hasText: 'Paste a YouTube link first.' })
+        .waitFor({ timeout: 2000 });
+      await page.fill('#trailer-url', 'https://vimeo.com/12345');
+      await page.press('#trailer-url', 'Enter');
+      await page
+        .locator('.field__error', { hasText: "That isn't a YouTube video link" })
+        .waitFor({ timeout: 2000 });
+      if ((await page.getAttribute('#trailer-url', 'aria-invalid')) !== 'true') {
+        throw new Error('the field is not marked invalid');
+      }
+      await expectNoOverflow(page, 'trailer picker');
+      await shot(page, '09-trailer-en');
+      await page.fill('#trailer-url', 'youtu.be/dQw4w9WgXcQ?t=5');
+      await page.press('#trailer-url', 'Enter');
+      await page.waitForSelector('.seatmap');
+      if (!page.url().includes('v=dQw4w9WgXcQ')) throw new Error('video id not carried over');
+      if ((await text(page, '.seatmap-context__trailer')) !== 'Trailer: your YouTube link') {
+        throw new Error('the chosen trailer is not shown');
+      }
+      await page.goBack();
+      await page.waitForSelector('form.paste');
+      await page.click('.trailer-skip a');
+      await page.waitForSelector('.seatmap');
+      if ((await text(page, '.seatmap-context__trailer')) !== 'No trailer') {
+        throw new Error('"No trailer" is not shown');
+      }
+      await context.close();
+    },
+  },
+  {
+    name: 'seat map: bands, best seat, keyboard, tap, nudge, take seat, back',
+    async run({ baseUrl, openPage, shot, expectNoOverflow }) {
+      const { context, page } = await openPage();
+      await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/seats?v=dQw4w9WgXcQ`);
+      await page.waitForSelector('.seatmap');
+      const seats = await page.locator('.seatmap [role=gridcell]').count();
+      if (seats !== 214) throw new Error(`expected 214 seats, found ${seats}`);
+      for (const band of ['prime', 'recommended', 'avoid']) {
+        if ((await page.locator(`.seatmap .seat--${band}`).count()) === 0) {
+          throw new Error(`no ${band} seats`);
+        }
+      }
+      if ((await page.locator('.legend__item').count()) !== 5) throw new Error('legend incomplete');
+      const selected = page.locator('.seatmap [aria-selected=true]');
+      if ((await selected.count()) !== 1) throw new Error('not exactly one selected seat');
+      if (!(await selected.getAttribute('class')).includes('seat--prime')) {
+        throw new Error('the map does not start on a prime seat');
+      }
+      if ((await page.locator('.seatmap-hint').count()) !== 1) throw new Error('hint missing');
+      await expectNoOverflow(page, 'seat map');
+      await shot(page, '10-seatmap-en');
+
+      // Keyboard: the selected seat is the tab stop; arrows move the selection and the URL.
+      const start = await selected.getAttribute('data-seat');
+      await selected.focus();
+      await page.keyboard.press('ArrowRight');
+      const afterRight = await page
+        .locator('.seatmap [aria-selected=true]')
+        .getAttribute('data-seat');
+      if (afterRight === start) throw new Error('ArrowRight did not move');
+      // The address follows the selection (written a moment later, not on every key press).
+      await page.waitForFunction(
+        (seat) => decodeURIComponent(location.href).includes(`seat=${seat}`),
+        afterRight,
+      );
+      await page.keyboard.press('ArrowUp');
+      const focused = await page.evaluate(() => document.activeElement?.getAttribute('data-seat'));
+      const now = await page.locator('.seatmap [aria-selected=true]').getAttribute('data-seat');
+      if (focused !== now) throw new Error('focus does not follow the selection');
+      if ((await page.locator('.seatmap [tabindex="0"]').count()) !== 1) {
+        throw new Error('more than one tab stop in the grid');
+      }
+
+      // Tap: a seat in the front row becomes the selection and the card says why to avoid it.
+      await page.locator('.seatmap [data-seat="A-7"]').click();
+      if ((await text(page, '.seat-card__seat')) !== 'Row A, Seat 7') throw new Error('tap missed');
+      if ((await text(page, '.seat-card .band-chip')) !== 'Avoid') throw new Error('A-7 not avoid');
+      if ((await page.locator('.seat-card .metric').count()) !== 4)
+        throw new Error('metrics missing');
+
+      // Nudge buttons move by one seat or row, and keep keyboard focus for the next press.
+      await page.getByRole('button', { name: 'Row further back' }).click();
+      const inRowB = await text(page, '.seat-card__seat');
+      if (!inRowB.startsWith('Row B,')) throw new Error('nudge failed');
+      await page.getByRole('button', { name: 'Seat to the right' }).focus();
+      await page.keyboard.press('Enter');
+      await page.keyboard.press('Enter');
+      const nudgeFocus = await page.evaluate(() =>
+        document.activeElement?.getAttribute('aria-label'),
+      );
+      if (nudgeFocus !== 'Seat to the right') throw new Error('a nudge lost keyboard focus');
+      const seatNumber = (name) => Number(name.replace(/^.*Seat /, ''));
+      if (seatNumber(await text(page, '.seat-card__seat')) !== seatNumber(inRowB) + 2) {
+        throw new Error('two nudges to the right did not move two seats');
+      }
+      // The selected seat carries the verdict as its description.
+      const described = await page
+        .locator('.seatmap [aria-selected=true]')
+        .getAttribute('aria-describedby');
+      if (described !== 'seat-card-verdict') throw new Error('seat not described by the verdict');
+
+      // Take this seat opens the 3D view of that seat, with the trailer; Back returns to it.
+      const chosen = await page.locator('.seatmap [aria-selected=true]').getAttribute('data-seat');
+      await page.click('.seat-card__take');
+      await page.waitForSelector('.seat-view');
+      if (!decodeURIComponent(page.url()).includes(`/view/${chosen}?v=dQw4w9WgXcQ`)) {
+        throw new Error(`wrong view URL: ${page.url()}`);
+      }
+      await page.goBack();
+      await page.waitForSelector('.seatmap');
+      const back = await page.locator('.seatmap [aria-selected=true]').getAttribute('data-seat');
+      if (back !== chosen) throw new Error('the seat was not remembered');
+
+      for (const lang of ['ko', 'zh-Hans']) {
+        await page.goto(
+          `${baseUrl}?lang=${lang}#/t/cineplex-vip-brentwood/brentwood-vip-sample/seats`,
+        );
+        await page.waitForSelector('.seatmap');
+        await expectNoOverflow(page, `seat map (${lang})`);
+        await shot(page, `11-seatmap-${lang}`);
+      }
+      await context.close();
+    },
+  },
+  {
+    name: 'seated view: 3D room, drag to look, recentre, language, back',
+    async run({ baseUrl, openPage, shot, expectNoOverflow }) {
+      const { context, page } = await openPage();
+      await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/seats`);
+      await page.locator('.seat-card__take').click();
       await page.waitForSelector('.seat-view.is-ready', { timeout: 30000 });
       const canvas = await page.locator('.stage__canvas').boundingBox();
       if (!canvas || canvas.width < 300 || canvas.height < 600) {
