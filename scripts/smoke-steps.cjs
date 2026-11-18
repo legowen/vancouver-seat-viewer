@@ -380,6 +380,98 @@ module.exports = [
     },
   },
   {
+    name: 'trailer plays on the screen: embed URL, sound, fill, fallback, replay',
+    async run({ baseUrl, openPage, shot }) {
+      const { context, page } = await openPage({ reducedMotion: 'reduce' });
+      await page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/view/G-10?v=dQw4w9WgXcQ`);
+      const frame = page.locator('.stage__video iframe');
+      await frame.waitFor({ timeout: 20000 });
+      const src = new URL(await frame.getAttribute('src'));
+      if (
+        src.origin !== 'https://www.youtube-nocookie.com' ||
+        src.pathname !== '/embed/dQw4w9WgXcQ'
+      ) {
+        throw new Error(`wrong embed: ${src}`);
+      }
+      for (const [key, value] of Object.entries({
+        autoplay: '1',
+        mute: '1',
+        playsinline: '1',
+        rel: '0',
+        modestbranding: '1',
+        controls: '1',
+      })) {
+        if (src.searchParams.get(key) !== value) throw new Error(`embed ${key} is not ${value}`);
+      }
+      // Once the player is ready the screen becomes a hole, and taps reach the player.
+      await page.waitForSelector('.view-sound:not([hidden])', { timeout: 15000 });
+      if ((await page.locator('.stage.has-video').count()) !== 1) throw new Error('no video layer');
+      const canvasEvents = await page.$eval(
+        '.stage__canvas',
+        (c) => getComputedStyle(c).pointerEvents,
+      );
+      if (canvasEvents !== 'none') throw new Error('the canvas still takes taps over the video');
+      if ((await text(page, '.view-sound')) !== 'Tap for sound') throw new Error('sound label');
+      await page.click('.view-sound');
+      if ((await text(page, '.view-sound')) !== 'Mute') throw new Error('not unmuted');
+      const label = page.frameLocator('.stage__video iframe').locator('#label');
+      await label.filter({ hasText: 'sound on' }).waitFor({ timeout: 5000 });
+      await page.waitForTimeout(300);
+      await shot(page, '12-video');
+
+      // Fill the wide screen instead of showing side bars, and back.
+      await page.click('.view-fill');
+      if ((await page.locator('.video-host.is-fill').count()) !== 1) throw new Error('fill failed');
+      if ((await page.getAttribute('.view-fill', 'aria-pressed')) !== 'true') {
+        throw new Error('fill button state');
+      }
+
+      // "Video not showing?" gives up: the poster comes back with an Open trailer link.
+      await page.click('.view-trouble');
+      await page.waitForSelector('.view-open');
+      const href = await page.getAttribute('.view-open', 'href');
+      if (href !== 'https://www.youtube.com/watch?v=dQw4w9WgXcQ') throw new Error(`open: ${href}`);
+      await page.waitForSelector('.stage__video', { state: 'detached' });
+      if (!(await page.locator('.view-sound').isHidden())) throw new Error('sound button left');
+      await shot(page, '13-video-fallback');
+      await context.close();
+
+      // Without the API script the same commands go to the embed as messages.
+      const raw = await openPage({
+        reducedMotion: 'reduce',
+        blockYouTubeApi: true,
+        allowConsole: /Failed to load resource: net::ERR_FAILED/,
+      });
+      await raw.page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/view/G-10?v=dQw4w9WgXcQ`);
+      await raw.page.waitForSelector('.view-sound:not([hidden])', { timeout: 20000 });
+      await raw.page.click('.view-sound');
+      await raw.page
+        .frameLocator('.stage__video iframe')
+        .locator('#label')
+        .filter({ hasText: 'sound on' })
+        .waitFor({ timeout: 5000 });
+      await raw.context.close();
+
+      // The video waits for the walk-in to end, and goes away while it replays.
+      const walk = await openPage();
+      await walk.page.goto(`${baseUrl}#/t/${THEATRE}/${AUDITORIUM}/view/G-10?v=dQw4w9WgXcQ`);
+      await walk.page.waitForSelector('.seat-view.is-walking');
+      if ((await walk.page.locator('.stage__video').count()) !== 0) {
+        throw new Error('video mounted during the walk-in');
+      }
+      await walk.page.click('.view-skip');
+      await walk.page.waitForSelector('.stage__video iframe', { timeout: 20000 });
+      await walk.page.click('.view-replay');
+      await walk.page.waitForSelector('.stage__video', { state: 'detached' });
+      await walk.page.click('.view-skip');
+      await walk.page.waitForSelector('.stage__video iframe', { timeout: 20000 });
+      await walk.page.keyboard.press('Escape');
+      await walk.page.waitForSelector('.seat-view', { state: 'detached' });
+      if ((await walk.page.locator('iframe').count()) !== 0) throw new Error('iframe left behind');
+      await walk.context.close();
+    },
+  },
+  {
     name: 'seated view handles an unknown seat',
     async run({ baseUrl, openPage }) {
       const { context, page } = await openPage();

@@ -27,6 +27,41 @@ function loadPlaywright() {
   }
 }
 
+/** Stand-in for https://www.youtube.com/iframe_api with the parts of YT.Player the app uses. */
+const FAKE_API = `
+window.YT = {
+  Player: function (element, options) {
+    var params = new URLSearchParams();
+    var vars = options.playerVars || {};
+    Object.keys(vars).forEach(function (key) { params.set(key, String(vars[key])); });
+    params.set('enablejsapi', '1');
+    var iframe = document.createElement('iframe');
+    iframe.src = (options.host || 'https://www.youtube.com') + '/embed/' + options.videoId + '?' + params;
+    element.replaceWith(iframe);
+    var muted = true;
+    function post(func) {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
+      }
+    }
+    iframe.addEventListener('load', function () {
+      setTimeout(function () {
+        if (options.events && options.events.onReady) options.events.onReady({});
+      }, 50);
+    });
+    return {
+      unMute: function () { muted = false; post('unMute'); },
+      mute: function () { muted = true; post('mute'); },
+      isMuted: function () { return muted; },
+      playVideo: function () { post('playVideo'); },
+      destroy: function () { iframe.remove(); },
+      getIframe: function () { return iframe; },
+    };
+  },
+};
+setTimeout(function () { if (window.onYouTubeIframeAPIReady) window.onYouTubeIframeAPIReady(); }, 0);
+`;
+
 /** 1×1 grey JPEG, served instead of YouTube thumbnails. */
 const TINY_JPEG = Buffer.from(
   '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=',
@@ -99,11 +134,16 @@ async function main() {
       route.fulfill({ status: 200, contentType: 'text/html', body: FAKE_EMBED }),
     );
     await context.route(/^https:\/\/www\.youtube\.com\/iframe_api/, (route) =>
-      route.fulfill({ status: 200, contentType: 'text/javascript', body: '/* stub */' }),
+      options.blockYouTubeApi
+        ? route.abort()
+        : route.fulfill({ status: 200, contentType: 'text/javascript', body: FAKE_API }),
     );
     const page = await context.newPage();
     page.on('console', (message) => {
-      if (message.type() === 'error') problems.push(`console error: ${message.text()}`);
+      if (message.type() !== 'error') return;
+      // A step that blocks a request on purpose may expect the browser to log it.
+      if (options.allowConsole?.test(message.text())) return;
+      problems.push(`console error: ${message.text()}`);
     });
     page.on('pageerror', (error) => problems.push(`page error: ${error.message}`));
     return { context, page };

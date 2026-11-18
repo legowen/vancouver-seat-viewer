@@ -27,11 +27,13 @@ import { PALETTE } from './palette';
 import { buildRoom } from './room';
 import { loadScreenTexture } from './screenImage';
 import { Stage } from './stage';
+import { VideoLayer, supportsCss3d, type VideoState } from './videoLayer';
 import { WALK_TIMING, ease, planWalk, sampleWalk } from './walk';
 
 export { WebGLUnavailableError } from './stage';
 
 export type ScenePhase = 'walking' | 'seated';
+export type { VideoState } from './videoLayer';
 
 export interface SeatSceneOptions {
   /** Element the canvas goes into. It receives drags and arrow keys, so make it focusable. */
@@ -46,6 +48,11 @@ export interface SeatSceneOptions {
   /** CSS pixels at the bottom covered by the info card. */
   bottomInset?: number;
   onPhaseChange?: (phase: ScenePhase) => void;
+  /** The trailer on the screen: loading, playing, or given up (blocked / failed). */
+  onVideoState?: (state: VideoState) => void;
+  onMutedChange?: (muted: boolean) => void;
+  /** Crop the video to fill a wide screen instead of showing side bars. */
+  videoFill?: boolean;
   /** The look moved away from, or back to, the screen centre. */
   onTurnedChange?: (turned: boolean) => void;
   onContextLost?: () => void;
@@ -62,6 +69,11 @@ export interface SeatScene {
   readonly poster: Texture | null;
   recentre(): void;
   skipWalk(): void;
+  unMute(): void;
+  mute(): void;
+  setVideoFill(fill: boolean): void;
+  /** Stop trying to play the video on the screen ("Video not showing?"). */
+  giveUpVideo(): void;
   replayWalk(): void;
   setBottomInset(pixels: number): void;
   dispose(): void;
@@ -200,7 +212,54 @@ export function createSeatScene(options: SeatSceneOptions): SeatScene {
     return sample;
   }
 
+  // --- The trailer, mounted only once the camera is seated and still ---
+  let video: VideoLayer | null = null;
+  let videoTimer = 0;
+  let videoFill = options.videoFill ?? false;
+  let videoGivenUp = false;
+
+  function mountVideo(): void {
+    window.clearTimeout(videoTimer);
+    if (!options.videoId || video || videoGivenUp || phase !== 'seated') return;
+    if (!supportsCss3d()) {
+      videoGivenUp = true;
+      options.onVideoState?.('failed');
+      return;
+    }
+    video = new VideoLayer({
+      stage,
+      screen: room.screen,
+      width: layout.screen.width,
+      height: layout.screen.height,
+      centreY: layout.screen.centre.y,
+      videoId: options.videoId,
+      fill: videoFill,
+      onState: (state) => {
+        if (state === 'blocked' || state === 'failed') {
+          videoGivenUp = true;
+          // Take the player down so it cannot keep playing under the poster.
+          window.setTimeout(unmountVideo, 0);
+        }
+        options.onVideoState?.(state);
+      },
+      onMutedChange: (muted) => options.onMutedChange?.(muted),
+    });
+    options.onVideoState?.('loading');
+  }
+
+  function scheduleVideo(): void {
+    window.clearTimeout(videoTimer);
+    videoTimer = window.setTimeout(mountVideo, 250);
+  }
+
+  function unmountVideo(): void {
+    window.clearTimeout(videoTimer);
+    video?.dispose();
+    video = null;
+  }
+
   function startWalk(): void {
+    unmountVideo();
     phase = 'walking';
     walkTime = 0;
     steps = 0;
@@ -226,6 +285,7 @@ export function createSeatScene(options: SeatSceneOptions): SeatScene {
     applySeatedCamera();
     options.onPhaseChange?.('seated');
     stage.requestRender();
+    scheduleVideo();
   }
 
   function stepWalk(dt: number): boolean {
@@ -268,6 +328,7 @@ export function createSeatScene(options: SeatSceneOptions): SeatScene {
     look.enabled = true;
     applySeatedCamera();
     stage.requestRender();
+    scheduleVideo();
   }
 
   // --- The still frame on the screen ---
@@ -307,9 +368,21 @@ export function createSeatScene(options: SeatSceneOptions): SeatScene {
     replayWalk() {
       if (phase === 'seated') startWalk();
     },
+    unMute: () => video?.unMute(),
+    mute: () => video?.mute(),
+    setVideoFill(fill) {
+      videoFill = fill;
+      video?.setFill(fill);
+    },
+    giveUpVideo() {
+      videoGivenUp = true;
+      if (video) video.giveUp();
+      else options.onVideoState?.('failed');
+    },
     setBottomInset: (pixels) => stage.setBottomInset(pixels),
     dispose() {
       disposed = true;
+      unmountVideo();
       look.dispose();
       avatar.dispose();
       heads.dispose();

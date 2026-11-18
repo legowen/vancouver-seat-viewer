@@ -10,7 +10,8 @@ import type { Auditorium } from '../data/resolve';
 import { computeLayout } from '../geometry/layout';
 import { t } from '../i18n';
 import { evaluateSeats } from '../metrics/seats';
-import type { ScenePhase, SeatScene } from '../scene/seatScene';
+import type { ScenePhase, SeatScene, VideoState } from '../scene/seatScene';
+import { watchUrl } from '../youtube/url';
 import { auditoriumBadges, chevron } from './common';
 import { createLanguageSwitcher } from './languageSwitcher';
 import { renderMiniMap } from './miniMap';
@@ -44,11 +45,17 @@ export function createSeatView(params: SeatViewParams): View {
   const status = h('div', { class: 'stage__status', role: 'status' });
   const switcher = createLanguageSwitcher();
   const skip = h('button', { type: 'button', class: 'pill pill--accent view-skip', hidden: true });
+  const sound = h('button', {
+    type: 'button',
+    class: 'pill pill--accent view-sound',
+    hidden: true,
+  });
   const walking = h('p', { class: 'view-walking', role: 'status', hidden: true });
   const topBar = h(
     'div',
     { class: 'view-top' },
     skip,
+    sound,
     h('span', { class: 'view-top__spacer' }),
     switcher.el,
   );
@@ -63,6 +70,9 @@ export function createSeatView(params: SeatViewParams): View {
   let restoreTimer = 0;
   const reducedMotion = prefersReducedMotion();
   let phase: ScenePhase = reducedMotion ? 'seated' : 'walking';
+  let videoState: VideoState | null = null;
+  let muted = true;
+  let fill = false;
 
   const goToSeatMap = () => navigate(seatMapHref);
 
@@ -132,6 +142,7 @@ export function createSeatView(params: SeatViewParams): View {
           }),
         ),
       ),
+      videoRow(),
       h(
         'div',
         { class: 'view-card__actions' },
@@ -157,6 +168,8 @@ export function createSeatView(params: SeatViewParams): View {
   function renderChrome(): void {
     recentre.textContent = t('view.recentre');
     skip.textContent = t('view.skip');
+    sound.textContent = muted ? t('view.sound') : t('view.mute');
+    sound.hidden = videoState !== 'playing' || phase !== 'seated';
     walking.textContent = t('view.walking');
     stageEl.setAttribute(
       'aria-label',
@@ -176,14 +189,88 @@ export function createSeatView(params: SeatViewParams): View {
 
   recentre.addEventListener('click', () => scene?.recentre());
   skip.addEventListener('click', () => scene?.skipWalk());
+  sound.addEventListener('click', () => {
+    if (muted) scene?.unMute();
+    else scene?.mute();
+  });
+
+  /** Video controls in the card: fit or fill, a way out, and the fallback when it can't play. */
+  function videoRow(): HTMLElement | null {
+    if (!videoId) return null;
+    if (videoState === 'blocked' || videoState === 'failed') {
+      return h(
+        'div',
+        { class: 'view-card__video is-fallback' },
+        h(
+          'p',
+          { class: 'view-card__note' },
+          videoState === 'blocked' ? t('view.videoBlocked') : t('view.fallbackNote'),
+        ),
+        h(
+          'a',
+          { class: 'btn view-open', href: watchUrl(videoId), target: '_blank', rel: 'noopener' },
+          t('view.openTrailer'),
+        ),
+      );
+    }
+    if (videoState !== 'playing' && videoState !== 'loading') return null;
+    return h(
+      'div',
+      { class: 'view-card__video' },
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'text-button view-fill',
+          'aria-pressed': String(fill),
+          onclick: () => {
+            fill = !fill;
+            scene?.setVideoFill(fill);
+            renderCard();
+            card.querySelector<HTMLElement>('.view-fill')?.focus();
+          },
+        },
+        fill ? t('view.fitVideo') : t('view.fillScreen'),
+      ),
+      h(
+        'button',
+        {
+          type: 'button',
+          class: 'text-button view-trouble',
+          onclick: () => scene?.giveUpVideo(),
+        },
+        t('view.videoTrouble'),
+      ),
+    );
+  }
+
+  function setVideoState(state: VideoState): void {
+    const hadFocus = card.contains(document.activeElement) ? document.activeElement : null;
+    videoState = state;
+    renderChrome();
+    renderCard();
+    // Keep keyboard users in the card when its contents change.
+    if (hadFocus && !card.contains(hadFocus)) {
+      card.querySelector<HTMLElement>('.view-open, .view-fill, .view-card__toggle')?.focus();
+    }
+  }
+
+  function setMuted(next: boolean): void {
+    muted = next;
+    const hadFocus = document.activeElement === sound;
+    renderChrome();
+    if (hadFocus) sound.focus();
+  }
 
   function setPhase(next: ScenePhase): void {
     phase = next;
     const isWalking = next === 'walking';
     // Do not hide the Skip button while it has focus: hand focus to the view first.
     if (!isWalking && document.activeElement === skip) stageEl.focus();
+    if (isWalking && document.activeElement === sound) skip.focus();
     skip.hidden = !isWalking;
     walking.hidden = !isWalking;
+    sound.hidden = isWalking || videoState !== 'playing';
     el.classList.toggle('is-walking', isWalking);
     const replay = card.querySelector<HTMLButtonElement>('.view-replay');
     if (replay) {
@@ -222,6 +309,9 @@ export function createSeatView(params: SeatViewParams): View {
           walkIn: !reducedMotion,
           bottomInset: card.getBoundingClientRect().height + 12,
           onPhaseChange: setPhase,
+          onVideoState: setVideoState,
+          onMutedChange: setMuted,
+          videoFill: fill,
           onTurnedChange: setTurned,
           onContextLost: () => {
             status.textContent = t('view.loading');

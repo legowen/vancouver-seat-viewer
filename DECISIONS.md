@@ -69,6 +69,16 @@ One line each: the decision, then why. Newest at the bottom of each section.
 - Escape first skips the walk-in, and only a second Escape leaves for the seat map; Replay walk is not offered with reduced motion, where the view always starts seated.
 - The screen shows the trailer's `hqdefault.jpg` letterboxed to the screen's shape, loaded with `crossOrigin = "anonymous"`; if it does not load within 8 s or cannot be used as a texture, the plain glowing screen stays.
 
+## Trailer on the screen
+
+- The trailer plays in the official embed created by the YouTube IFrame Player API (`YT.Player` with host `youtube-nocookie.com` and the spec's player parameters); "Tap for sound" calls `unMute()`. If the API script does not load within 6 s, the embed is created directly with the spec's URL and the same API commands are sent to it as messages — the protocol the API script itself uses.
+- The iframe is placed with CSS3DRenderer on the screen plane in a layer under the transparent WebGL canvas; the screen mesh draws transparent pixels (no blending) so the video shows through while the heads in front are drawn over it.
+- The iframe is mounted 250 ms after the camera is seated, removed while a walk is replayed and when the view is left; the screen turns transparent only once the player is ready, so the poster stays until then.
+- While the video is mounted, the WebGL canvas lets taps through, so YouTube's own controls work; dragging outside the video still turns the view.
+- The 16:9 trailer is shown whole with side bars on a wide screen by default (as a cinema shows a flat trailer on a scope screen); "Fill screen" crops it instead.
+- Fallback — the poster plus an "Open trailer" link to YouTube in a new tab — after 12 s without a ready player, on errors 101/150/153 (the uploader blocks embedding), when CSS 3D transforms are missing, or by hand ("Video not showing?"); the player is then removed so it cannot keep playing out of sight.
+- The browser smoke test replaces YouTube with local stubs (the IFrame API, the embed and the thumbnail), so it runs offline and checks both the API path and the message path.
+
 ## Internationalisation
 
 - Locale files are discovered with `import.meta.glob('./locales/*.json')` and each carries its own switcher label in `meta.languageName` — adding `zh-Hant.json` needs no code change.
