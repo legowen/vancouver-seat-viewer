@@ -1,0 +1,11 @@
+{
+  "id": "cineplex-international-village",
+  "name": "Cineplex Odeon International Village",
+  "area": "Vancouver (Chinatown)",
+  "areaNames": {
+    "ko": "밴쿠버 (차이나타운)",
+    "zh-Hans": "温哥华（唐人街）"
+  },
+  "auditoriums": ["international-village-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

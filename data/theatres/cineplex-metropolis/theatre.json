@@ -1,0 +1,11 @@
+{
+  "id": "cineplex-metropolis",
+  "name": "Cineplex Cinemas Metropolis",
+  "area": "Burnaby (Metrotown)",
+  "areaNames": {
+    "ko": "버나비 (메트로타운)",
+    "zh-Hans": "本拿比（铁道镇）"
+  },
+  "auditoriums": ["metropolis-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

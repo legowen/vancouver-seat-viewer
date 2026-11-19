@@ -1,0 +1,11 @@
+{
+  "id": "silvercity-riverport",
+  "name": "SilverCity Riverport",
+  "area": "Richmond",
+  "areaNames": {
+    "ko": "리치먼드",
+    "zh-Hans": "列治文"
+  },
+  "auditoriums": ["riverport-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

@@ -1,0 +1,44 @@
+{
+  "meta.name": "English",
+  "meta.short": "EN",
+
+  "app.title": "Vancouver Seat Viewer",
+  "app.titleShort": "Seat Viewer",
+  "app.tagline": "See the view from your seat before you book.",
+  "app.disclaimer": "Unofficial fan project — not affiliated with Cineplex Entertainment.",
+  "app.language": "Language",
+  "app.skipToContent": "Skip to content",
+  "app.loading": "Loading…",
+
+  "nav.back": "Back",
+  "nav.allTheatres": "All theatres",
+
+  "home.heading": "Pick a theatre",
+  "home.intro": "Choose a theatre, an auditorium and a seat. Then walk in, sit down and see how the screen looks from there.",
+  "home.auditoriums": "Auditoriums: {count}",
+  "home.empty": "No theatres yet. Add one under data/theatres.",
+
+  "theatre.heading": "Pick an auditorium",
+  "theatre.intro": "Match the seat map to the one you saw when booking.",
+  "theatre.seats": "{count} seats",
+  "theatre.rows": "{count} rows",
+  "theatre.empty": "No auditoriums here yet.",
+  "theatre.mapAlt": "Seat map of {name}",
+
+  "type.standard": "Standard",
+  "type.vip": "VIP",
+
+  "badge.estimated": "Estimated dimensions",
+  "badge.estimatedHint": "Screen size and distances are typical values, not measured in this auditorium.",
+  "badge.sample": "Sample layout",
+  "badge.sampleHint": "A made-up layout for trying the app. Not a real seat map.",
+
+  "error.notFoundTitle": "Page not found",
+  "error.notFoundBody": "That page doesn't exist, or the link is out of date.",
+  "error.theatre": "We couldn't find that theatre.",
+  "error.auditorium": "We couldn't find that auditorium.",
+  "error.seat": "We couldn't find that seat in this auditorium.",
+  "error.backHome": "Back to theatres",
+  "error.dataTitle": "Some data files couldn't be loaded",
+  "error.dataBody": "They were skipped. Fix the problems below and reload."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "cineplex-vip-brentwood",
+  "name": "Cineplex VIP Cinemas Brentwood",
+  "area": "Burnaby (Brentwood)",
+  "areaNames": {
+    "ko": "버나비 (브렌트우드)",
+    "zh-Hans": "本拿比（Brentwood）"
+  },
+  "auditoriums": ["brentwood-vip-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "scotiabank-vancouver",
+  "name": "Scotiabank Theatre Vancouver",
+  "area": "Vancouver (Downtown)",
+  "areaNames": {
+    "ko": "밴쿠버 (다운타운)",
+    "zh-Hans": "温哥华（市中心）"
+  },
+  "auditoriums": ["scotiabank-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

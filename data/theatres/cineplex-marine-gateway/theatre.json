@@ -1,0 +1,11 @@
+{
+  "id": "cineplex-marine-gateway",
+  "name": "Cineplex Marine Gateway & VIP",
+  "area": "Vancouver (Marpole)",
+  "areaNames": {
+    "ko": "밴쿠버 (마폴)",
+    "zh-Hans": "温哥华（马波尔）"
+  },
+  "auditoriums": ["marine-gateway-vip-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

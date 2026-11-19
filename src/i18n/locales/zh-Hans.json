@@ -1,0 +1,44 @@
+{
+  "meta.name": "简体中文",
+  "meta.short": "中文",
+
+  "app.title": "温哥华影院座位视角",
+  "app.titleShort": "座位视角",
+  "app.tagline": "订票之前，先看看从你的座位望去是什么样。",
+  "app.disclaimer": "非官方影迷项目——与 Cineplex Entertainment 无任何关联。",
+  "app.language": "语言",
+  "app.skipToContent": "跳到正文",
+  "app.loading": "加载中…",
+
+  "nav.back": "返回",
+  "nav.allTheatres": "全部影院",
+
+  "home.heading": "选择影院",
+  "home.intro": "选好影院、影厅和座位，然后走进去坐下，看看从那里望向银幕是什么样。",
+  "home.auditoriums": "影厅：{count} 个",
+  "home.empty": "还没有影院。请在 data/theatres 下添加。",
+
+  "theatre.heading": "选择影厅",
+  "theatre.intro": "对照订票时看到的座位图，选出同一个影厅。",
+  "theatre.seats": "{count} 个座位",
+  "theatre.rows": "{count} 排",
+  "theatre.empty": "这里还没有影厅。",
+  "theatre.mapAlt": "{name} 的座位图",
+
+  "type.standard": "普通厅",
+  "type.vip": "VIP",
+
+  "badge.estimated": "尺寸为估算",
+  "badge.estimatedHint": "银幕大小和距离取的是常见数值，并非在该影厅实测。",
+  "badge.sample": "示例布局",
+  "badge.sampleHint": "为体验应用而虚构的布局，不是真实座位图。",
+
+  "error.notFoundTitle": "找不到页面",
+  "error.notFoundBody": "该页面不存在，或链接已过期。",
+  "error.theatre": "找不到该影院。",
+  "error.auditorium": "找不到该影厅。",
+  "error.seat": "在该影厅中找不到这个座位。",
+  "error.backHome": "返回影院列表",
+  "error.dataTitle": "部分数据文件无法加载",
+  "error.dataBody": "这些文件已被跳过。请修正下列问题后刷新页面。"
+}

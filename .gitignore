@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+*.local
+.vite
+.DS_Store
+Thumbs.db
+*.log
+.claude/worktrees/
+.claude/settings.local.json

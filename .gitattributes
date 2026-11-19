@@ -1,0 +1,2 @@
+# Keep LF line endings on every platform so Prettier and CI agree with local checkouts.
+* text=auto eol=lf

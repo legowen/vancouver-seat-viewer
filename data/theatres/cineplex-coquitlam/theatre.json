@@ -1,0 +1,11 @@
+{
+  "id": "cineplex-coquitlam",
+  "name": "Cineplex Cinemas Coquitlam",
+  "area": "Coquitlam",
+  "areaNames": {
+    "ko": "코퀴틀람",
+    "zh-Hans": "高贵林"
+  },
+  "auditoriums": ["coquitlam-sample"],
+  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+}

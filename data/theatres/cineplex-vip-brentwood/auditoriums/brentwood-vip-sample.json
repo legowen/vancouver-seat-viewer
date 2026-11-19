@@ -1,0 +1,19 @@
+{
+  "id": "brentwood-vip-sample",
+  "theatreId": "cineplex-vip-brentwood",
+  "name": "Sample auditorium — replace with real seat map",
+  "type": "vip",
+  "rows": [
+    { "label": "A", "seats": [1, 2, null, 3, 4, 5, 6, 7, 8, null, 9, 10] },
+    { "label": "B", "seats": [1, 2, null, 3, 4, 5, 6, 7, 8, null, 9, 10] },
+    { "label": "C", "seats": [1, 2, null, 3, 4, 5, 6, 7, 8, null, 9, 10] },
+    { "label": "D", "seats": [1, 2, null, 3, 4, 5, 6, 7, 8, null, 9, 10] },
+    { "label": "E", "seats": [1, 2, null, 3, 4, 5, 6, 7, 8, null, 9, 10] },
+    { "label": "F", "seats": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] }
+  ],
+  "entrance": "back-left",
+  "verified": false,
+  "placeholder": true,
+  "source": "Placeholder layout made up for the demo. Not taken from a real seat map.",
+  "notes": "Replace this file with a real auditorium. See docs/add-auditorium.md."
+}
