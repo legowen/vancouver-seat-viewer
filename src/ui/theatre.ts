@@ -4,6 +4,8 @@ import type { AppContext, Screen } from '../app/types';
 import { findTheatre } from '../data/loader';
 import { countSeats, type Auditorium } from '../data/schema';
 import { fmt, t } from '../i18n';
+import { pickDefaultSeat, rateLayout } from '../metrics';
+import { resolveAuditorium } from '../metrics/layout';
 import {
   auditoriumBadges,
   auditoriumName,
@@ -14,12 +16,26 @@ import {
 } from './common';
 
 function auditoriumCard(auditorium: Auditorium): HTMLElement {
+  // Until the seat map exists, open the 3D view from the suggested seat.
+  const seatKey = pickDefaultSeat(rateLayout(resolveAuditorium(auditorium)));
   return h(
     'li',
     null,
     h(
-      'div',
-      { class: 'card' },
+      'a',
+      {
+        class: 'card card--link',
+        href: seatKey
+          ? routeToHash({
+              name: 'view',
+              theatreId: auditorium.theatreId,
+              auditoriumId: auditorium.id,
+              seatKey,
+              videoId: null,
+              forceFallback: false,
+            })
+          : undefined,
+      },
       h(
         'span',
         { class: 'card__body' },

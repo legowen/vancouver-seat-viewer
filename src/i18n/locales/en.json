@@ -1,7 +1,6 @@
 {
   "meta.name": "English",
   "meta.short": "EN",
-
   "app.title": "Vancouver Seat Viewer",
   "app.titleShort": "Seat Viewer",
   "app.tagline": "See the view from your seat before you book.",
@@ -9,30 +8,24 @@
   "app.language": "Language",
   "app.skipToContent": "Skip to content",
   "app.loading": "Loading…",
-
   "nav.back": "Back",
   "nav.allTheatres": "All theatres",
-
   "home.heading": "Pick a theatre",
   "home.intro": "Choose a theatre, an auditorium and a seat. Then walk in, sit down and see how the screen looks from there.",
   "home.auditoriums": "Auditoriums: {count}",
   "home.empty": "No theatres yet. Add one under data/theatres.",
-
   "theatre.heading": "Pick an auditorium",
   "theatre.intro": "Match the seat map to the one you saw when booking.",
   "theatre.seats": "{count} seats",
   "theatre.rows": "{count} rows",
   "theatre.empty": "No auditoriums here yet.",
   "theatre.mapAlt": "Seat map of {name}",
-
   "type.standard": "Standard",
   "type.vip": "VIP",
-
   "badge.estimated": "Estimated dimensions",
   "badge.estimatedHint": "Screen size and distances are typical values, not measured in this auditorium.",
   "badge.sample": "Sample layout",
   "badge.sampleHint": "A made-up layout for trying the app. Not a real seat map.",
-
   "error.notFoundTitle": "Page not found",
   "error.notFoundBody": "That page doesn't exist, or the link is out of date.",
   "error.theatre": "We couldn't find that theatre.",
@@ -40,5 +33,25 @@
   "error.seat": "We couldn't find that seat in this auditorium.",
   "error.backHome": "Back to theatres",
   "error.dataTitle": "Some data files couldn't be loaded",
-  "error.dataBody": "They were skipped. Fix the problems below and reload."
+  "error.dataBody": "They were skipped. Fix the problems below and reload.",
+  "band.prime": "Prime",
+  "band.recommended": "Recommended",
+  "band.ok": "OK",
+  "band.meh": "Meh",
+  "band.avoid": "Avoid",
+  "verdict.prime": "The screen fills your view",
+  "verdict.recommended": "Comfortable on the neck, and you see the whole screen",
+  "verdict.ok": "Comfortable, but the screen feels a little small",
+  "verdict.meh": "Feels a bit far away",
+  "verdict.tooClose": "Turn your head to see it all",
+  "verdict.neck": "You'll be looking up the whole time",
+  "verdict.side": "Strong side angle",
+  "verdict.sideMild": "Good size, but you see it from the side",
+  "seat.name": "Row {row}, Seat {seat}",
+  "seat.distance": "Distance {value}",
+  "seat.viewingAngle": "Viewing angle {value}",
+  "view.changeSeat": "Change seat",
+  "view.recentre": "Recentre",
+  "view.stageLabel": "3D view from {seat}. Drag or use the arrow keys to look around.",
+  "view.noWebgl": "Your browser couldn't start the 3D view. Try another browser, or turn on hardware acceleration."
 }

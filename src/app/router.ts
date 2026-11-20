@@ -12,6 +12,11 @@ async function createScreen(route: Route, context: AppContext): Promise<Screen> 
       return homeScreen(context);
     case 'theatre':
       return theatreScreen(context, route);
+    case 'view': {
+      // The 3D view pulls in three.js, so it is downloaded only when first needed.
+      const { viewScreen } = await import('../ui/view');
+      return viewScreen(context, route);
+    }
     default:
       return notFoundScreen();
   }

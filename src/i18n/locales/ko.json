@@ -1,7 +1,6 @@
 {
   "meta.name": "한국어",
   "meta.short": "한국어",
-
   "app.title": "밴쿠버 좌석 뷰어",
   "app.titleShort": "좌석 뷰어",
   "app.tagline": "예매하기 전에 내 자리에서 보이는 화면을 확인하세요.",
@@ -9,30 +8,24 @@
   "app.language": "언어",
   "app.skipToContent": "본문으로 건너뛰기",
   "app.loading": "불러오는 중…",
-
   "nav.back": "뒤로",
   "nav.allTheatres": "전체 극장",
-
   "home.heading": "극장을 고르세요",
   "home.intro": "극장, 상영관, 좌석을 고른 다음 걸어 들어가 앉아서 스크린이 어떻게 보이는지 확인해 보세요.",
   "home.auditoriums": "상영관 {count}개",
   "home.empty": "아직 극장이 없습니다. data/theatres 아래에 추가하세요.",
-
   "theatre.heading": "상영관을 고르세요",
   "theatre.intro": "예매할 때 본 좌석 배치도와 같은 상영관을 고르세요.",
   "theatre.seats": "좌석 {count}석",
   "theatre.rows": "{count}열",
   "theatre.empty": "아직 등록된 상영관이 없습니다.",
   "theatre.mapAlt": "{name} 좌석 배치도",
-
   "type.standard": "일반관",
   "type.vip": "VIP",
-
   "badge.estimated": "추정 치수",
   "badge.estimatedHint": "스크린 크기와 거리는 이 상영관에서 실측한 값이 아니라 일반적인 값입니다.",
   "badge.sample": "샘플 배치",
   "badge.sampleHint": "앱을 체험하기 위한 가상의 배치입니다. 실제 좌석 배치도가 아닙니다.",
-
   "error.notFoundTitle": "페이지를 찾을 수 없습니다",
   "error.notFoundBody": "없는 페이지이거나 오래된 링크입니다.",
   "error.theatre": "해당 극장을 찾을 수 없습니다.",
@@ -40,5 +33,25 @@
   "error.seat": "이 상영관에서 해당 좌석을 찾을 수 없습니다.",
   "error.backHome": "극장 목록으로",
   "error.dataTitle": "일부 데이터 파일을 불러오지 못했습니다",
-  "error.dataBody": "해당 파일은 건너뛰었습니다. 아래 문제를 고친 뒤 새로고침하세요."
+  "error.dataBody": "해당 파일은 건너뛰었습니다. 아래 문제를 고친 뒤 새로고침하세요.",
+  "band.prime": "명당",
+  "band.recommended": "추천",
+  "band.ok": "무난",
+  "band.meh": "아쉬움",
+  "band.avoid": "비추천",
+  "verdict.prime": "스크린이 시야를 가득 채워요",
+  "verdict.recommended": "목이 편하고 스크린 전체가 한눈에 들어와요",
+  "verdict.ok": "편하지만 화면이 조금 작게 느껴져요",
+  "verdict.meh": "화면이 조금 멀게 느껴져요",
+  "verdict.tooClose": "고개를 돌려야 화면 전체가 보여요",
+  "verdict.neck": "내내 고개를 들고 봐야 해요",
+  "verdict.side": "옆으로 많이 치우쳐 있어요",
+  "verdict.sideMild": "크기는 좋지만 비스듬히 보여요",
+  "seat.name": "{row}열 {seat}번",
+  "seat.distance": "거리 {value}",
+  "seat.viewingAngle": "시야각 {value}",
+  "view.changeSeat": "좌석 바꾸기",
+  "view.recentre": "정면 보기",
+  "view.stageLabel": "{seat}에서 본 3D 화면입니다. 드래그하거나 화살표 키로 둘러보세요.",
+  "view.noWebgl": "이 브라우저에서는 3D 화면을 열 수 없습니다. 다른 브라우저를 쓰거나 하드웨어 가속을 켜 보세요."
 }

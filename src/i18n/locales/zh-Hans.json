@@ -1,7 +1,6 @@
 {
   "meta.name": "简体中文",
   "meta.short": "中文",
-
   "app.title": "温哥华影院座位视角",
   "app.titleShort": "座位视角",
   "app.tagline": "订票之前，先看看从你的座位望去是什么样。",
@@ -9,30 +8,24 @@
   "app.language": "语言",
   "app.skipToContent": "跳到正文",
   "app.loading": "加载中…",
-
   "nav.back": "返回",
   "nav.allTheatres": "全部影院",
-
   "home.heading": "选择影院",
   "home.intro": "选好影院、影厅和座位，然后走进去坐下，看看从那里望向银幕是什么样。",
   "home.auditoriums": "影厅：{count} 个",
   "home.empty": "还没有影院。请在 data/theatres 下添加。",
-
   "theatre.heading": "选择影厅",
   "theatre.intro": "对照订票时看到的座位图，选出同一个影厅。",
   "theatre.seats": "{count} 个座位",
   "theatre.rows": "{count} 排",
   "theatre.empty": "这里还没有影厅。",
   "theatre.mapAlt": "{name} 的座位图",
-
   "type.standard": "普通厅",
   "type.vip": "VIP",
-
   "badge.estimated": "尺寸为估算",
   "badge.estimatedHint": "银幕大小和距离取的是常见数值，并非在该影厅实测。",
   "badge.sample": "示例布局",
   "badge.sampleHint": "为体验应用而虚构的布局，不是真实座位图。",
-
   "error.notFoundTitle": "找不到页面",
   "error.notFoundBody": "该页面不存在，或链接已过期。",
   "error.theatre": "找不到该影院。",
@@ -40,5 +33,25 @@
   "error.seat": "在该影厅中找不到这个座位。",
   "error.backHome": "返回影院列表",
   "error.dataTitle": "部分数据文件无法加载",
-  "error.dataBody": "这些文件已被跳过。请修正下列问题后刷新页面。"
+  "error.dataBody": "这些文件已被跳过。请修正下列问题后刷新页面。",
+  "band.prime": "黄金位",
+  "band.recommended": "推荐",
+  "band.ok": "尚可",
+  "band.meh": "一般",
+  "band.avoid": "避开",
+  "verdict.prime": "银幕填满你的视野",
+  "verdict.recommended": "脖子舒服，整块银幕尽收眼底",
+  "verdict.ok": "看得舒服，只是银幕显得小了点",
+  "verdict.meh": "感觉有点远",
+  "verdict.tooClose": "得转头才能看全银幕",
+  "verdict.neck": "全程都要仰着头看",
+  "verdict.side": "侧向角度太大",
+  "verdict.sideMild": "大小合适，但角度偏侧",
+  "seat.name": "{row} 排 {seat} 座",
+  "seat.distance": "距离 {value}",
+  "seat.viewingAngle": "视角 {value}",
+  "view.changeSeat": "换座位",
+  "view.recentre": "回到正前方",
+  "view.stageLabel": "从 {seat} 看到的 3D 画面。拖动或使用方向键环顾四周。",
+  "view.noWebgl": "你的浏览器无法打开 3D 画面。请换一个浏览器，或开启硬件加速。"
 }

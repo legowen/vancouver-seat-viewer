@@ -514,3 +514,175 @@ code {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Rating bands ---------- */
+
+[data-band='prime'] {
+  --band: var(--band-prime);
+}
+
+[data-band='recommended'] {
+  --band: var(--band-recommended);
+}
+
+[data-band='ok'] {
+  --band: var(--band-ok);
+}
+
+[data-band='meh'] {
+  --band: var(--band-meh);
+}
+
+[data-band='avoid'] {
+  --band: var(--band-avoid);
+}
+
+.band-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--band);
+  color: #121217;
+  font-size: 0.8125rem;
+  font-weight: 750;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* ---------- 3D view ---------- */
+
+.view {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  background: #000;
+}
+
+.view__stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 180px;
+  overflow: hidden;
+  background: #000;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.view__stage.is-dragging {
+  cursor: grabbing;
+}
+
+.view__stage:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.view__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.view__toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.view__toolbar > * {
+  pointer-events: auto;
+}
+
+.view__error {
+  position: absolute;
+  inset: auto 16px 50% 16px;
+  margin: 0 auto;
+  max-width: 420px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(16 16 22 / 0.72);
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.chip:hover {
+  background: rgb(36 36 48 / 0.85);
+}
+
+.chip[hidden] {
+  display: none;
+}
+
+/* ---------- Seat card (bottom of the 3D view) ---------- */
+
+.seat-card {
+  flex: none;
+  display: grid;
+  gap: 4px;
+  padding: 12px var(--gutter) 12px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.seat-card__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.seat-card__title {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.seat-card__verdict {
+  font-weight: 600;
+  text-wrap: pretty;
+}
+
+.seat-card__stats {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.seat-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
