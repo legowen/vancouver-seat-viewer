@@ -58,3 +58,12 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The selected seat is kept in the address (`?seat=K-23`) — reloading or coming back with "Change seat" returns to it.
 - On phones the seat card sticks to the bottom of the screen — "Take this seat" stays within reach while the map scrolls.
 - Auditorium cards show a thumbnail of the seat map coloured by band — it helps match the room to the map seen when booking.
+
+## Walk-in
+
+- The avatar takes the side aisle nearer the seat, crossing the front (or back) of the room first when the door is on the other side, then side-steps along the row facing the screen — it matches how people actually reach a seat and keeps the route out of the seats.
+- Walking time is held between 2.8 and 4.4 s, plus 1.4 s to sit, so every walk lasts 4.2–5.8 s; long walks in big rooms simply go faster.
+- Each row's step starts just behind the seat backs of the row in front (0.65 row spacings ahead of the eyes) — the legroom then sits on the step, which is what the avatar walks along.
+- The follow camera tries angles around "directly behind" and uses the first one inside the room — right after the door, "behind" is usually inside a wall.
+- Under `prefers-reduced-motion` the view opens already seated and "Replay walk" is hidden; Escape or "Skip" ends the walk at any time, and focus moves into the 3D view when the Skip button disappears.
+- The avatar is a round mascot holding popcorn rather than a person — it stays cute and avoids picking anyone's appearance.

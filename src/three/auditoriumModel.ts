@@ -2,6 +2,7 @@ import {
   AdditiveBlending,
   BoxGeometry,
   BufferAttribute,
+  CapsuleGeometry,
   Color,
   CylinderGeometry,
   DirectionalLight,
@@ -25,7 +26,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { AuditoriumType } from '../data/schema';
 import type { AuditoriumLayout, SeatPosition } from '../metrics/layout';
 import { audienceInFrontOf, HAIR_TONES } from '../scene/audience';
-import { floorAt, roomShape, rowFrontZ, type RoomShape } from '../scene/room';
+import { entranceDoor, floorAt, roomShape, rowFrontZ, type RoomShape } from '../scene/room';
 import {
   carpetTexture,
   exitSignTexture,
@@ -138,12 +139,13 @@ function reclinerGeometry(seatWidth: number): BufferGeometry {
 function personGeometry(): BufferGeometry {
   const head = new SphereGeometry(0.105, 14, 10);
   head.scale(0.95, 1.12, 1.05);
-  const neck = new CylinderGeometry(0.05, 0.056, 0.16, 10, 1, true);
-  neck.translate(0, -0.16, 0.01);
-  const shoulders = new SphereGeometry(0.22, 16, 8);
-  shoulders.scale(1, 0.46, 0.56);
-  shoulders.translate(0, -0.3, 0.03);
-  return merge([head, neck, shoulders]);
+  const neck = new CylinderGeometry(0.048, 0.055, 0.12, 10, 1, true);
+  neck.translate(0, -0.15, 0.015);
+  // A wide, rounded upper body: from behind it reads as shoulders, not a chess pawn.
+  const torso = new CapsuleGeometry(0.16, 0.34, 6, 14);
+  torso.scale(1.35, 1, 0.75);
+  torso.translate(0, -0.47, 0.04);
+  return merge([head, neck, torso]);
 }
 
 /** Paints risers darker than treads so the steps read clearly in the dark. */
@@ -440,10 +442,10 @@ export function buildAuditoriumModel(
   own(stepLights);
 
   // ---------- Entrance door with an EXIT sign ----------
-  const entranceAtBack = layout.entrance.startsWith('back');
-  const entranceSign = layout.entrance.endsWith('left') ? -1 : 1;
-  const doorZ = entranceAtBack ? room.back - 0.8 : 1.6;
-  const doorFloor = entranceAtBack ? room.lastFloor : 0;
+  const entrance = entranceDoor(layout, room);
+  const entranceSign = entrance.side;
+  const doorZ = entrance.z;
+  const doorFloor = entrance.floorY;
   const door = new PlaneGeometry(1.3, 2.2);
   door.rotateY((entranceSign * -Math.PI) / 2);
   door.translate(entranceSign * (room.halfWidth - 0.015), doorFloor + 1.1, doorZ);

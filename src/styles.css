@@ -936,3 +936,18 @@ code {
   height: auto;
   margin-top: 2px;
 }
+
+.chip--accent {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.chip--accent:hover {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+.view[data-mode='walking'] .view__stage {
+  cursor: default;
+}

@@ -5,7 +5,7 @@ import { findAuditorium, findTheatre } from '../data/loader';
 import { t } from '../i18n';
 import { rateLayout } from '../metrics';
 import { findSeat, resolveAuditorium } from '../metrics/layout';
-import { SeatViewer } from '../three/viewer';
+import { SeatViewer, type ViewerMode } from '../three/viewer';
 import { auditoriumName, estimatedBadge } from './common';
 import { notFoundScreen } from './notFound';
 import { bandPill, seatName, seatStats, verdictText } from './seatInfo';
@@ -41,18 +41,57 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     seatKey: seat.key,
   });
 
+  const reducedMotion = prefersReducedMotion();
+  let viewer: SeatViewer | null = null;
+  let mode: ViewerMode = 'seated';
+
   const stage = h('div', { class: 'view__stage', tabindex: 0, role: 'application' });
-  const recentreButton = h('button', { type: 'button', class: 'chip' });
-  const toolbar = h('div', { class: 'view__toolbar' }, h('span'), recentreButton);
-  stage.append(toolbar);
+  const skipButton = h('button', {
+    type: 'button',
+    class: 'chip chip--accent',
+    hidden: true,
+    onclick: () => viewer?.skipWalk(),
+  });
+  const recentreButton = h('button', {
+    type: 'button',
+    class: 'chip',
+    onclick: () => viewer?.recentre(),
+  });
+  const replayButton = h('button', {
+    type: 'button',
+    class: 'button button--ghost button--small',
+    hidden: reducedMotion,
+    onclick: () => {
+      viewer?.replayWalk();
+      stage.focus({ preventScroll: true });
+    },
+  });
+  // Announces the walk and the arrival to screen readers.
+  const status = h('p', { class: 'visually-hidden', role: 'status' });
+  stage.append(h('div', { class: 'view__toolbar' }, h('span'), skipButton, recentreButton));
 
   const card = h('section', { class: 'seat-card' });
-  const el = h('div', { class: 'view' }, stage, card);
+  const el = h('div', { class: 'view' }, stage, card, status);
+
+  const applyMode = (next: ViewerMode): void => {
+    mode = next;
+    el.dataset.mode = next;
+    const hadFocus = skipButton.contains(document.activeElement);
+    skipButton.hidden = next !== 'walking';
+    recentreButton.hidden = next !== 'seated' || !viewer;
+    replayButton.disabled = next === 'walking';
+    // Hiding the focused Skip button would drop focus to the page; keep it in the view.
+    if (hadFocus && skipButton.hidden) stage.focus({ preventScroll: true });
+    status.textContent =
+      next === 'walking' ? t('view.walking') : t('view.seated', { seat: seatName(seat) });
+  };
 
   const renderText = (): string => {
     const name = seatName(seat);
     stage.setAttribute('aria-label', t('view.stageLabel', { seat: name }));
+    skipButton.textContent = t('view.skip');
     recentreButton.textContent = t('view.recentre');
+    replayButton.textContent = t('view.replay');
     card.replaceChildren(
       h(
         'div',
@@ -84,25 +123,29 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
           { class: 'button button--ghost button--small', href: changeSeatHref },
           t('view.changeSeat'),
         ),
+        replayButton,
       ),
     );
+    if (status.textContent) applyMode(mode);
     return `${name} · ${auditoriumName(layout.auditorium)}`;
   };
   const title = renderText();
 
-  let viewer: SeatViewer | null = null;
   try {
     viewer = new SeatViewer({
       stage,
       layout,
       seat,
       videoId: route.videoId,
-      reducedMotion: prefersReducedMotion(),
+      reducedMotion,
+      onModeChange: applyMode,
     });
-    recentreButton.addEventListener('click', () => viewer?.recentre());
+    applyMode(viewer.currentMode);
   } catch (cause) {
     console.error('Could not start the 3D view', cause);
+    skipButton.hidden = true;
     recentreButton.hidden = true;
+    replayButton.hidden = true;
     stage.append(h('p', { class: 'view__error', role: 'alert' }, t('view.noWebgl')));
   }
 

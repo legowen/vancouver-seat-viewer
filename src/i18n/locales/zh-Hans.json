@@ -65,5 +65,9 @@
   "legend.avoid": "太近、仰角太大或太偏",
   "seat.sideAngle": "侧向角 {value}",
   "seat.lookUp": "仰视角 {value}",
-  "view.miniMap": "你在座位图上的位置"
+  "view.miniMap": "你在座位图上的位置",
+  "view.skip": "跳过",
+  "view.replay": "重看入场",
+  "view.walking": "正在走向座位…",
+  "view.seated": "已在 {seat} 坐下。"
 }

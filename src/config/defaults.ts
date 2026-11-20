@@ -80,6 +80,11 @@ export const SCREEN_DEFAULTS = {
  * seat ratings.
  */
 export const ROOM = {
+  /**
+   * Each row's step starts this far in front of the sitter's eyes, as a fraction of the row
+   * spacing: just behind the seat backs of the row in front, so the legroom is on the step.
+   */
+  stepAhead: 0.65,
   /** Walkway between the outermost seats and the side walls. */
   sideAisle_m: 1.2,
   /** Walkway behind the last row. */
@@ -90,4 +95,10 @@ export const ROOM = {
   ceilingAboveScreen_m: 1.6,
   /** …and above the floor of the last row. Whichever is higher wins. */
   ceilingAboveLastRow_m: 3.2,
+};
+
+/** How far each kind of seat reaches forward of the sitter's eyes (front edge of the cushion). */
+export const SEAT_REACH_M: Record<AuditoriumType, number> = {
+  standard: 0.27,
+  vip: 0.41,
 };

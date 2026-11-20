@@ -65,5 +65,9 @@
   "legend.avoid": "너무 가깝거나, 너무 올려다보거나, 너무 옆쪽인 자리",
   "seat.sideAngle": "측면 각도 {value}",
   "seat.lookUp": "올려다보는 각도 {value}",
-  "view.miniMap": "좌석 배치도에서 내 자리"
+  "view.miniMap": "좌석 배치도에서 내 자리",
+  "view.skip": "건너뛰기",
+  "view.replay": "입장 다시 보기",
+  "view.walking": "자리로 걸어가는 중…",
+  "view.seated": "{seat}에 앉았어요."
 }

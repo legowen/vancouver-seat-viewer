@@ -1,8 +1,9 @@
-import { PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import { Euler, PerspectiveCamera, Quaternion, Scene, Vector3, WebGLRenderer } from 'three';
 import { VIEW } from '../config/view';
 import type { AuditoriumLayout, SeatPosition } from '../metrics/layout';
 import { buildAuditoriumModel, type AuditoriumModel } from './auditoriumModel';
 import { loadPosterTexture } from './textures';
+import { WalkIn, type CameraPose } from './walkIn';
 
 const DEG = Math.PI / 180;
 
@@ -11,6 +12,8 @@ const clamp = (value: number, min: number, max: number): number =>
 
 const easeInOut = (t: number): number => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
+export type ViewerMode = 'walking' | 'seated';
+
 export interface SeatViewerOptions {
   /** The element the canvas fills. It also receives drag and keyboard input. */
   stage: HTMLElement;
@@ -18,15 +21,19 @@ export interface SeatViewerOptions {
   seat: SeatPosition;
   /** YouTube id whose still frame is shown on the screen. */
   videoId: string | null;
-  /** Skip animations (prefers-reduced-motion). */
+  /** Start with the walk-in animation. Ignored when `reducedMotion` is set. */
+  walkIn?: boolean;
+  /** Cut every animation (prefers-reduced-motion). */
   reducedMotion?: boolean;
+  onModeChange?(mode: ViewerMode): void;
 }
 
 /**
- * Renders an auditorium from one seat. The camera sits at the seat's eye position, aimed
- * at the centre of the screen, and can be turned a little by dragging or with the arrow keys.
+ * Renders an auditorium from one seat. After an optional walk-in, the camera sits at the
+ * seat's eye position, aimed at the centre of the screen, and can be turned a little by
+ * dragging or with the arrow keys.
  *
- * Frames are only drawn when something changed, which keeps phones cool while the user reads.
+ * While seated, frames are only drawn when something changed, which keeps phones cool.
  */
 export class SeatViewer {
   readonly renderer: WebGLRenderer;
@@ -36,6 +43,9 @@ export class SeatViewer {
   private readonly events = new AbortController();
   private readonly resizeObserver: ResizeObserver;
   private seat: SeatPosition;
+  private mode: ViewerMode = 'seated';
+  private walk: WalkIn | null = null;
+  private lastFrame = 0;
   /** Look offsets from straight at the screen centre, in degrees. Positive = right / up. */
   private yaw = 0;
   private pitch = 0;
@@ -80,13 +90,29 @@ export class SeatViewer {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(stage);
     this.bindInput();
-    this.updateCamera();
+    if (options.walkIn !== false && !options.reducedMotion) this.startWalk();
+    else this.updateCamera();
     this.frame = requestAnimationFrame(this.tick);
+  }
+
+  get currentMode(): ViewerMode {
+    return this.mode;
+  }
+
+  /** Plays the walk from the door to the seat again. */
+  replayWalk(): void {
+    if (this.options.reducedMotion) return;
+    this.startWalk();
+  }
+
+  /** Jumps straight to the seat. */
+  skipWalk(): void {
+    if (this.mode === 'walking') this.finishWalk();
   }
 
   /** Smoothly turns back to face the screen centre. */
   recentre(): void {
-    if (this.yaw === 0 && this.pitch === 0) return;
+    if (this.mode !== 'seated' || (this.yaw === 0 && this.pitch === 0)) return;
     if (this.options.reducedMotion) {
       this.yaw = 0;
       this.pitch = 0;
@@ -99,6 +125,7 @@ export class SeatViewer {
 
   /** Turns the view by the given angles, within the drag-to-look limits. */
   lookBy(yawDegrees: number, pitchDegrees: number): void {
+    if (this.mode !== 'seated') return;
     this.recentring = null;
     this.yaw = clamp(this.yaw + yawDegrees, -VIEW.maxYaw, VIEW.maxYaw);
     this.pitch = clamp(this.pitch + pitchDegrees, -VIEW.maxPitch, VIEW.maxPitch);
@@ -107,11 +134,13 @@ export class SeatViewer {
 
   /** Moves straight to another seat, facing the screen. */
   setSeat(seat: SeatPosition): void {
+    this.endWalk();
     this.seat = seat;
     this.yaw = 0;
     this.pitch = 0;
     this.recentring = null;
     this.model.setViewerSeat(seat);
+    this.setMode('seated');
     this.updateCamera();
   }
 
@@ -121,10 +150,43 @@ export class SeatViewer {
     cancelAnimationFrame(this.frame);
     this.events.abort();
     this.resizeObserver.disconnect();
+    this.endWalk();
     this.model.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
     this.renderer.domElement.remove();
+  }
+
+  private setMode(mode: ViewerMode): void {
+    if (mode === this.mode) return;
+    this.mode = mode;
+    this.options.onModeChange?.(mode);
+  }
+
+  private startWalk(): void {
+    this.endWalk();
+    this.yaw = 0;
+    this.pitch = 0;
+    this.recentring = null;
+    this.walk = new WalkIn(this.options.layout, this.seat, () => this.seatedPose());
+    this.scene.add(this.walk.avatar.group);
+    this.model.highlightSeat(this.seat);
+    this.lastFrame = 0;
+    this.setMode('walking');
+    this.invalidate();
+  }
+
+  private finishWalk(): void {
+    this.endWalk();
+    this.setMode('seated');
+    this.updateCamera();
+  }
+
+  private endWalk(): void {
+    if (!this.walk) return;
+    this.walk.dispose();
+    this.walk = null;
+    this.model.highlightSeat(null);
   }
 
   private invalidate(): void {
@@ -148,23 +210,42 @@ export class SeatViewer {
     this.invalidate();
   }
 
-  private updateCamera(): void {
+  /** Camera pose for the seat, looking at the screen centre plus the given look offsets. */
+  private seatedPose(yawOffset = 0, pitchOffset = 0): CameraPose {
     const { seat } = this;
     const { screen } = this.options.layout;
-    // Straight at the screen centre…
     const dx = -seat.x;
     const dy = screen.centerY - seat.eyeY;
     const dz = -seat.z;
-    const baseYaw = Math.atan2(dx, -dz) / DEG;
-    const basePitch = Math.atan2(dy, Math.hypot(dx, dz)) / DEG;
-    // …plus whatever the user dragged.
-    this.camera.position.set(seat.x, seat.eyeY, seat.z);
-    this.camera.rotation.set((basePitch + this.pitch) * DEG, -(baseYaw + this.yaw) * DEG, 0, 'YXZ');
+    const yaw = Math.atan2(dx, -dz) / DEG + yawOffset;
+    const pitch = Math.atan2(dy, Math.hypot(dx, dz)) / DEG + pitchOffset;
+    return {
+      position: new Vector3(seat.x, seat.eyeY, seat.z),
+      quaternion: new Quaternion().setFromEuler(new Euler(pitch * DEG, -yaw * DEG, 0, 'YXZ')),
+    };
+  }
+
+  private updateCamera(): void {
+    if (this.mode !== 'seated') return;
+    const pose = this.seatedPose(this.yaw, this.pitch);
+    this.camera.position.copy(pose.position);
+    this.camera.quaternion.copy(pose.quaternion);
     this.invalidate();
   }
 
   private readonly tick = (now: number): void => {
     this.frame = requestAnimationFrame(this.tick);
+
+    if (this.walk) {
+      // Cap the step so a stalled tab does not jump to the end of the walk.
+      const delta = this.lastFrame ? Math.min(0.1, (now - this.lastFrame) / 1000) : 0;
+      this.lastFrame = now;
+      this.walk.update(delta, this.camera);
+      this.renderer.render(this.scene, this.camera);
+      if (this.walk.done) this.finishWalk();
+      return;
+    }
+
     if (this.recentring) {
       const progress = Math.min(1, (now - this.recentring.start) / VIEW.recentreMs);
       const remaining = 1 - easeInOut(progress);
@@ -185,7 +266,7 @@ export class SeatViewer {
     stage.addEventListener(
       'pointerdown',
       (event) => {
-        if (event.button !== 0 || this.drag) return;
+        if (event.button !== 0 || this.drag || this.mode !== 'seated') return;
         // Capturing the pointer would swallow clicks on the buttons laid over the view.
         if (event.target instanceof Element && event.target.closest('button, a, input, select')) {
           return;
@@ -222,6 +303,13 @@ export class SeatViewer {
     stage.addEventListener(
       'keydown',
       (event) => {
+        if (this.mode === 'walking') {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            this.skipWalk();
+          }
+          return;
+        }
         const step = VIEW.keyStep;
         const turns: Record<string, [number, number]> = {
           ArrowLeft: [-step, 0],

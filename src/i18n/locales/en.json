@@ -65,5 +65,9 @@
   "legend.avoid": "too close, too steep or too far to the side",
   "seat.sideAngle": "Side angle {value}",
   "seat.lookUp": "Look up {value}",
-  "view.miniMap": "Your seat on the seat map"
+  "view.miniMap": "Your seat on the seat map",
+  "view.skip": "Skip",
+  "view.replay": "Replay walk",
+  "view.walking": "Walking to your seat…",
+  "view.seated": "You're sitting in {seat}."
 }
