@@ -93,3 +93,10 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The editor's 3D preview reuses one WebGL context (`SeatViewer.setLayout`) — browsers allow only a few live contexts.
 - The editor works entirely in the browser (download or copy the JSON) and is only reachable at `#/editor` — the brief asks for a hidden page and a static site.
 - An editor draft survives a language switch (it is kept in memory) but not a reload — anything more would mean storing seat maps in the browser.
+
+## Polish and deployment
+
+- On short landscape screens the seat card moves beside the 3D view, and the mini map is hidden there — stacked, the card's buttons fell off a 360 px-tall phone screen.
+- The disclaimer stays in the footer on every screen, including the full-screen 3D view.
+- The deploy workflow runs lint and tests before publishing, and only deploys from `main`; `ci.yml` checks every other push — a broken build never replaces the live site.
+- GitHub Actions are referenced by major version tags (`@v7`, `@v6`, `@v5`) — they pick up fixes without editing the workflow.

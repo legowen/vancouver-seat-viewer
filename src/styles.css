@@ -1309,3 +1309,26 @@ code {
   white-space: pre;
   overflow-wrap: normal;
 }
+
+/* Phones held sideways: the card moves beside the 3D view so its buttons stay on screen. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .view {
+    flex-direction: row;
+  }
+
+  .view__stage {
+    min-height: 0;
+  }
+
+  .seat-card {
+    width: min(320px, 44vw);
+    align-content: start;
+    overflow-y: auto;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .seat-card__map {
+    display: none;
+  }
+}
