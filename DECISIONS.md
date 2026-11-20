@@ -100,3 +100,4 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The disclaimer stays in the footer on every screen, including the full-screen 3D view.
 - The deploy workflow runs lint and tests before publishing, and only deploys from `main`; `ci.yml` checks every other push — a broken build never replaces the live site.
 - GitHub Actions are referenced by major version tags (`@v7`, `@v6`, `@v5`) — they pick up fixes without editing the workflow.
+- This build replaced an earlier, unrelated build of the same brief on `main` (at the owner's request, 2026-11-19); the earlier one stays on the `claude/zealous-rubin-3tujo9` branch — the two histories share no commit, so they could not be merged.

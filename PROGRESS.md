@@ -11,8 +11,10 @@ again if a session is interrupted.
 - [x] **M5** YouTube playback on the screen (CSS3D) with head occlusion, unmute, fallback,
       plus the verified trailer list
 - [x] **M6** Compact seat-map format, editor page, `docs/add-auditorium.md`
-- [x] **M7** Polish, README, GitHub Pages deploy workflow (push to `main` waits for a decision:
-      `origin/main` holds a separate, unrelated build from another session)
+- [x] **M7** Polish, README, GitHub Pages deploy workflow, push to `main`
+
+An earlier, separate build of the same brief (from another session) is kept on the
+`claude/zealous-rubin-3tujo9` branch; this build replaced it on `main` on 2026-11-19.
 
 ## Picking the work back up
 
