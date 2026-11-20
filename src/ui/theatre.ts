@@ -2,9 +2,9 @@ import { h } from '../app/dom';
 import { routeToHash } from '../app/routes';
 import type { AppContext, Screen } from '../app/types';
 import { findTheatre } from '../data/loader';
-import { countSeats, type Auditorium } from '../data/schema';
+import type { Auditorium } from '../data/schema';
 import { fmt, t } from '../i18n';
-import { pickDefaultSeat, rateLayout } from '../metrics';
+import { rateLayout } from '../metrics';
 import { resolveAuditorium } from '../metrics/layout';
 import {
   auditoriumBadges,
@@ -14,41 +14,45 @@ import {
   theatreArea,
   theatreName,
 } from './common';
+import { seatMapThumbnail } from './seatMap';
 
 function auditoriumCard(auditorium: Auditorium): HTMLElement {
-  // Until the seat map exists, open the 3D view from the suggested seat.
-  const seatKey = pickDefaultSeat(rateLayout(resolveAuditorium(auditorium)));
+  const layout = resolveAuditorium(auditorium);
+  const name = auditoriumName(auditorium);
   return h(
     'li',
     null,
     h(
       'a',
       {
-        class: 'card card--link',
-        href: seatKey
-          ? routeToHash({
-              name: 'view',
-              theatreId: auditorium.theatreId,
-              auditoriumId: auditorium.id,
-              seatKey,
-              videoId: null,
-              forceFallback: false,
-            })
-          : undefined,
+        class: 'card card--link card--auditorium',
+        href: routeToHash({
+          name: 'seats',
+          theatreId: auditorium.theatreId,
+          auditoriumId: auditorium.id,
+          videoId: null,
+          seatKey: null,
+        }),
       },
+      // A small picture of the seat map, to match against the one seen when booking.
+      seatMapThumbnail(layout, rateLayout(layout), {
+        label: t('theatre.mapAlt', { name }),
+        className: 'card__thumb',
+      }),
       h(
         'span',
         { class: 'card__body' },
-        h('span', { class: 'card__title' }, auditoriumName(auditorium)),
+        h('span', { class: 'card__title' }, name),
         h(
           'span',
           { class: 'card__meta' },
           t('theatre.rows', { count: fmt.count(auditorium.rows.length) }),
           ' · ',
-          t('theatre.seats', { count: fmt.count(countSeats(auditorium.rows)) }),
+          t('theatre.seats', { count: fmt.count(layout.seatCount) }),
         ),
         h('span', { class: 'card__badges' }, auditoriumBadges(auditorium)),
       ),
+      h('span', { class: 'card__chevron', 'aria-hidden': 'true' }, '›'),
     ),
   );
 }

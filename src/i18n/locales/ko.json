@@ -53,5 +53,17 @@
   "view.changeSeat": "좌석 바꾸기",
   "view.recentre": "정면 보기",
   "view.stageLabel": "{seat}에서 본 3D 화면입니다. 드래그하거나 화살표 키로 둘러보세요.",
-  "view.noWebgl": "이 브라우저에서는 3D 화면을 열 수 없습니다. 다른 브라우저를 쓰거나 하드웨어 가속을 켜 보세요."
+  "view.noWebgl": "이 브라우저에서는 3D 화면을 열 수 없습니다. 다른 브라우저를 쓰거나 하드웨어 가속을 켜 보세요.",
+  "seats.title": "좌석을 고르고 앉아 보세요",
+  "seats.take": "이 자리에 앉기",
+  "seats.mapLabel": "좌석 배치도",
+  "seats.hint": "화살표 키로 좌석 사이를 이동하고, 고른 좌석에서 Enter 키를 누르면 앉습니다.",
+  "seats.screen": "스크린",
+  "seats.legend": "좌석 색상 안내",
+  "seats.seatLabel": "{seat}, {band}",
+  "legend.below": "{value} 미만",
+  "legend.avoid": "너무 가깝거나, 너무 올려다보거나, 너무 옆쪽인 자리",
+  "seat.sideAngle": "측면 각도 {value}",
+  "seat.lookUp": "올려다보는 각도 {value}",
+  "view.miniMap": "좌석 배치도에서 내 자리"
 }

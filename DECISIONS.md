@@ -49,3 +49,12 @@ Choices made where the brief left room, one line each: the decision, then why.
 - Heads appear only in the rows in front of the chosen seat, about 60% of seats, picked by a hash of the auditorium id and seat key — those are the only heads visible from the seat, and the crowd stays the same on every visit.
 - Seats, heads, sconces and step lights are instanced meshes, and all textures are drawn on canvases at runtime — a 400-seat room stays at a handful of draw calls with no model or image files.
 - Frames are rendered only when something changes — the seated view is mostly still, so this saves battery on phones.
+
+## Seat map
+
+- Seats are HTML buttons placed at the same left-to-right positions as in the 3D model — screen readers get real buttons with labels, and the 2D and 3D layouts cannot disagree.
+- One seat is tabbable at a time; arrow keys move the selection (up = towards the screen), Home/End jump along the row, and Enter on the selected seat sits down — the usual keyboard pattern for a 2D picker.
+- A tap that lands between seats picks the nearest seat within one seat width — seats can be as small as 11 px on a 360 px phone.
+- The selected seat is kept in the address (`?seat=K-23`) — reloading or coming back with "Change seat" returns to it.
+- On phones the seat card sticks to the bottom of the screen — "Take this seat" stays within reach while the map scrolls.
+- Auditorium cards show a thumbnail of the seat map coloured by band — it helps match the room to the map seen when booking.

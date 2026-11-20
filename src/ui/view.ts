@@ -3,12 +3,13 @@ import { routeToHash, type Route } from '../app/routes';
 import type { AppContext, Screen } from '../app/types';
 import { findAuditorium, findTheatre } from '../data/loader';
 import { t } from '../i18n';
-import { rateSeatAt } from '../metrics';
+import { rateLayout } from '../metrics';
 import { findSeat, resolveAuditorium } from '../metrics/layout';
 import { SeatViewer } from '../three/viewer';
 import { auditoriumName, estimatedBadge } from './common';
 import { notFoundScreen } from './notFound';
 import { bandPill, seatName, seatStats, verdictText } from './seatInfo';
+import { seatMapThumbnail } from './seatMap';
 
 type ViewRoute = Extract<Route, { name: 'view' }>;
 
@@ -29,9 +30,16 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
   const layout = resolveAuditorium(auditorium);
   const seat = findSeat(layout, route.seatKey);
   if (!seat) return notFoundScreen('error.seat');
-  const rated = rateSeatAt(layout, seat);
+  const ratedSeats = rateLayout(layout);
+  const rated = ratedSeats.get(seat.key)!;
 
-  const changeSeatHref = routeToHash({ name: 'theatre', theatreId: entry.theatre.id });
+  const changeSeatHref = routeToHash({
+    name: 'seats',
+    theatreId: route.theatreId,
+    auditoriumId: route.auditoriumId,
+    videoId: route.videoId,
+    seatKey: seat.key,
+  });
 
   const stage = h('div', { class: 'view__stage', tabindex: 0, role: 'application' });
   const recentreButton = h('button', { type: 'button', class: 'chip' });
@@ -48,13 +56,26 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     card.replaceChildren(
       h(
         'div',
-        { class: 'seat-card__top' },
-        bandPill(rated.rating.band),
-        estimatedBadge(layout.auditorium),
+        { class: 'seat-card__summary' },
+        h(
+          'div',
+          { class: 'seat-card__text' },
+          h(
+            'div',
+            { class: 'seat-card__top' },
+            bandPill(rated.rating.band),
+            estimatedBadge(layout.auditorium),
+          ),
+          h('h1', { class: 'seat-card__title' }, name),
+          h('p', { class: 'seat-card__verdict' }, verdictText(rated)),
+          h('p', { class: 'seat-card__stats' }, seatStats(rated)),
+        ),
+        seatMapThumbnail(layout, ratedSeats, {
+          label: t('view.miniMap'),
+          highlight: seat.key,
+          className: 'seat-card__map',
+        }),
       ),
-      h('h1', { class: 'seat-card__title' }, name),
-      h('p', { class: 'seat-card__verdict' }, verdictText(rated)),
-      h('p', { class: 'seat-card__stats' }, seatStats(rated)),
       h(
         'div',
         { class: 'seat-card__actions' },

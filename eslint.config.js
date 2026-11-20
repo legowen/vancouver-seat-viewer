@@ -5,7 +5,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist/', 'node_modules/', 'coverage/', '.claude/']),
+  globalIgnores(['dist/', 'node_modules/', 'coverage/', '.claude/', '.playwright-mcp/']),
   js.configs.recommended,
   tseslint.configs.recommended,
   {

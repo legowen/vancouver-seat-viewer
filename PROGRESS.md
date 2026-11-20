@@ -6,7 +6,7 @@ again if a session is interrupted.
 - [x] **M1** Scaffold, tooling, CI workflow, i18n (EN / KO / ZH), data schema and loader,
       placeholder data for the 7 theatres
 - [x] **M2** Procedural auditorium, seated first-person view, seat metrics with tests
-- [ ] **M3** 2D seat map: rating bands, legend, info card, keyboard support
+- [x] **M3** 2D seat map: rating bands, legend, info card, keyboard support
 - [ ] **M4** Walk-in animation, camera transitions, skip, reduced motion
 - [ ] **M5** YouTube playback on the screen (CSS3D) with head occlusion, unmute, fallback,
       plus the verified trailer list

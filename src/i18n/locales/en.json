@@ -53,5 +53,17 @@
   "view.changeSeat": "Change seat",
   "view.recentre": "Recentre",
   "view.stageLabel": "3D view from {seat}. Drag or use the arrow keys to look around.",
-  "view.noWebgl": "Your browser couldn't start the 3D view. Try another browser, or turn on hardware acceleration."
+  "view.noWebgl": "Your browser couldn't start the 3D view. Try another browser, or turn on hardware acceleration.",
+  "seats.title": "Pick a seat and sit down",
+  "seats.take": "Take this seat",
+  "seats.mapLabel": "Seat map",
+  "seats.hint": "Use the arrow keys to move between seats. Press Enter on the chosen seat to sit down.",
+  "seats.screen": "SCREEN",
+  "seats.legend": "Seat colours",
+  "seats.seatLabel": "{seat}, {band}",
+  "legend.below": "under {value}",
+  "legend.avoid": "too close, too steep or too far to the side",
+  "seat.sideAngle": "Side angle {value}",
+  "seat.lookUp": "Look up {value}",
+  "view.miniMap": "Your seat on the seat map"
 }

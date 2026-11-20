@@ -53,5 +53,17 @@
   "view.changeSeat": "换座位",
   "view.recentre": "回到正前方",
   "view.stageLabel": "从 {seat} 看到的 3D 画面。拖动或使用方向键环顾四周。",
-  "view.noWebgl": "你的浏览器无法打开 3D 画面。请换一个浏览器，或开启硬件加速。"
+  "view.noWebgl": "你的浏览器无法打开 3D 画面。请换一个浏览器，或开启硬件加速。",
+  "seats.title": "选个座位，坐下来看看",
+  "seats.take": "就坐这里",
+  "seats.mapLabel": "座位图",
+  "seats.hint": "用方向键在座位之间移动，在选中的座位上按 Enter 键即可坐下。",
+  "seats.screen": "银幕",
+  "seats.legend": "座位颜色说明",
+  "seats.seatLabel": "{seat}，{band}",
+  "legend.below": "低于 {value}",
+  "legend.avoid": "太近、仰角太大或太偏",
+  "seat.sideAngle": "侧向角 {value}",
+  "seat.lookUp": "仰视角 {value}",
+  "view.miniMap": "你在座位图上的位置"
 }

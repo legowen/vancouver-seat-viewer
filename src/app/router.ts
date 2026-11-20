@@ -2,8 +2,9 @@ import { onLocaleChange } from '../i18n';
 import { homeScreen } from '../ui/home';
 import { notFoundScreen } from '../ui/notFound';
 import type { Shell } from '../ui/shell';
+import { seatsScreen } from '../ui/seats';
 import { theatreScreen } from '../ui/theatre';
-import { parseHash, routeToHash, type Route } from './routes';
+import { parseHash, type Route } from './routes';
 import type { AppContext, Screen } from './types';
 
 async function createScreen(route: Route, context: AppContext): Promise<Screen> {
@@ -12,6 +13,8 @@ async function createScreen(route: Route, context: AppContext): Promise<Screen> 
       return homeScreen(context);
     case 'theatre':
       return theatreScreen(context, route);
+    case 'seats':
+      return seatsScreen(context, route);
     case 'view': {
       // The 3D view pulls in three.js, so it is downloaded only when first needed.
       const { viewScreen } = await import('../ui/view');
@@ -20,26 +23,6 @@ async function createScreen(route: Route, context: AppContext): Promise<Screen> 
     default:
       return notFoundScreen();
   }
-}
-
-/** Goes to a route. `replace` swaps the current history entry instead of adding one. */
-export function navigate(route: Route, options: { replace?: boolean } = {}): void {
-  const hash = routeToHash(route);
-  if (!options.replace) {
-    window.location.hash = hash;
-    return;
-  }
-  const url = new URL(window.location.href);
-  url.hash = hash;
-  window.history.replaceState(window.history.state, '', url);
-  window.dispatchEvent(new HashChangeEvent('hashchange'));
-}
-
-/** Rewrites the address bar without re-rendering, to keep a reload on the same state. */
-export function rememberRoute(route: Route): void {
-  const url = new URL(window.location.href);
-  url.hash = routeToHash(route);
-  window.history.replaceState(window.history.state, '', url);
 }
 
 /** Renders the screen for the current hash and keeps doing so as the hash changes. */

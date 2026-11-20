@@ -6,3 +6,4 @@ package-lock.json
 
 # Auditorium files keep one seat row per line, which Prettier would reflow.
 data/theatres/*/auditoriums/*.json
+.playwright-mcp
