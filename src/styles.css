@@ -118,6 +118,12 @@ code {
   font-size: 0.9em;
 }
 
+/* Components set their own display (.button is inline-flex), which would otherwise beat the
+   browser's own rule and keep [hidden] elements on screen. */
+[hidden] {
+  display: none !important;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -640,10 +646,6 @@ code {
 
 .chip:hover {
   background: rgb(36 36 48 / 0.85);
-}
-
-.chip[hidden] {
-  display: none;
 }
 
 /* ---------- Seat card (bottom of the 3D view) ---------- */
