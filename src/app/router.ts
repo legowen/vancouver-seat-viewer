@@ -23,6 +23,10 @@ async function createScreen(route: Route, context: AppContext): Promise<Screen> 
       const { viewScreen } = await import('../ui/view');
       return viewScreen(context, route);
     }
+    case 'editor': {
+      const { editorScreen } = await import('../ui/editor');
+      return editorScreen(context);
+    }
     default:
       return notFoundScreen();
   }

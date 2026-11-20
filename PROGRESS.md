@@ -10,7 +10,7 @@ again if a session is interrupted.
 - [x] **M4** Walk-in animation, camera transitions, skip, reduced motion
 - [x] **M5** YouTube playback on the screen (CSS3D) with head occlusion, unmute, fallback,
       plus the verified trailer list
-- [ ] **M6** Compact seat-map format, editor page, `docs/add-auditorium.md`
+- [x] **M6** Compact seat-map format, editor page, `docs/add-auditorium.md`
 - [ ] **M7** Polish, README, GitHub Pages deploy workflow, push
 
 ## Picking the work back up

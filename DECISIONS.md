@@ -81,3 +81,15 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The fallback (still frame plus "Open trailer") is used when CSS 3D transforms are unsupported, when the player reports an error (removed, private or not embeddable), when it has not loaded after 15 s, or with `?fallback=1` in the view URL.
 - The WebGL canvas ignores pointer events — drags anywhere outside the picture still turn the view, and clicks on the picture reach YouTube's own controls.
 - A bare 11-character video id is rejected in the paste box — the brief limits input to the watch?v=, youtu.be/, shorts/ and embed/ link forms.
+
+## Adding auditoriums
+
+- The compact format also accepts commas, `|` without spaces around it, descending ranges (`14-11`) and `#` comment lines — screenshots and hand-typed maps vary, and these cost nothing to support.
+- Parse errors come back as codes with a line number, and the editor turns them into translated sentences — the parser stays testable and language-free.
+- `formatCompact` writes `_` for gaps at the ends of a row and `|` inside it — the JSON cannot tell them apart (both are `null`), and this reads most like the seat map.
+- Auditorium files are written with one row of seats per line — the file then reads like the seat map and diffs stay small.
+- Editor sliders start on "Default", and a dimension is only written to the file once its box is unticked — untouched values keep following `src/config/defaults.ts`.
+- The editor previews the rows that parsed even while another field still has a problem — it is easier to fix a map you can see.
+- The editor's 3D preview reuses one WebGL context (`SeatViewer.setLayout`) — browsers allow only a few live contexts.
+- The editor works entirely in the browser (download or copy the JSON) and is only reachable at `#/editor` — the brief asks for a hidden page and a static site.
+- An editor draft survives a language switch (it is kept in memory) but not a reload — anything more would mean storing seat maps in the browser.

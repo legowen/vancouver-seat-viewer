@@ -45,7 +45,8 @@ export class SeatViewer {
   readonly renderer: WebGLRenderer;
   private readonly scene = new Scene();
   private readonly camera = new PerspectiveCamera(60, 1, 0.05, 200);
-  private readonly model: AuditoriumModel;
+  private model: AuditoriumModel;
+  private layout: AuditoriumLayout;
   private readonly events = new AbortController();
   private readonly resizeObserver: ResizeObserver;
   private seat: SeatPosition;
@@ -67,6 +68,7 @@ export class SeatViewer {
   constructor(private readonly options: SeatViewerOptions) {
     const { stage, layout, seat } = options;
     this.seat = seat;
+    this.layout = layout;
 
     // Throws when WebGL is unavailable; the caller shows a message instead.
     this.renderer = new WebGLRenderer({ antialias: window.devicePixelRatio < 2, alpha: true });
@@ -164,6 +166,17 @@ export class SeatViewer {
     this.updateCamera();
   }
 
+  /** Swaps in a different auditorium (the editor's live preview) without a new WebGL context. */
+  setLayout(layout: AuditoriumLayout, seat: SeatPosition): void {
+    this.endWalk();
+    this.scene.remove(this.model.group);
+    this.model.dispose();
+    this.layout = layout;
+    this.model = buildAuditoriumModel(layout, seat);
+    this.scene.add(this.model.group);
+    this.setSeat(seat);
+  }
+
   /** Moves straight to another seat, facing the screen. */
   setSeat(seat: SeatPosition): void {
     this.endWalk();
@@ -224,7 +237,7 @@ export class SeatViewer {
     this.yaw = 0;
     this.pitch = 0;
     this.recentring = null;
-    this.walk = new WalkIn(this.options.layout, this.seat, () => this.seatedPose());
+    this.walk = new WalkIn(this.layout, this.seat, () => this.seatedPose());
     this.scene.add(this.walk.avatar.group);
     this.model.highlightSeat(this.seat);
     this.lastFrame = 0;
@@ -270,7 +283,7 @@ export class SeatViewer {
   /** Camera pose for the seat, looking at the screen centre plus the given look offsets. */
   private seatedPose(yawOffset = 0, pitchOffset = 0): CameraPose {
     const { seat } = this;
-    const { screen } = this.options.layout;
+    const { screen } = this.layout;
     const dx = -seat.x;
     const dy = screen.centerY - seat.eyeY;
     const dz = -seat.z;
