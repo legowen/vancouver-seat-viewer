@@ -4,6 +4,7 @@ import { notFoundScreen } from '../ui/notFound';
 import type { Shell } from '../ui/shell';
 import { seatsScreen } from '../ui/seats';
 import { theatreScreen } from '../ui/theatre';
+import { trailerScreen } from '../ui/trailer';
 import { parseHash, type Route } from './routes';
 import type { AppContext, Screen } from './types';
 
@@ -13,6 +14,8 @@ async function createScreen(route: Route, context: AppContext): Promise<Screen> 
       return homeScreen(context);
     case 'theatre':
       return theatreScreen(context, route);
+    case 'trailer':
+      return trailerScreen(context, route);
     case 'seats':
       return seatsScreen(context, route);
     case 'view': {

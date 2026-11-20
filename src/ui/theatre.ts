@@ -27,11 +27,9 @@ function auditoriumCard(auditorium: Auditorium): HTMLElement {
       {
         class: 'card card--link card--auditorium',
         href: routeToHash({
-          name: 'seats',
+          name: 'trailer',
           theatreId: auditorium.theatreId,
           auditoriumId: auditorium.id,
-          videoId: null,
-          seatKey: null,
         }),
       },
       // A small picture of the seat map, to match against the one seen when booking.

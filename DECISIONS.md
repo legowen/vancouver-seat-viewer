@@ -67,3 +67,17 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The follow camera tries angles around "directly behind" and uses the first one inside the room — right after the door, "behind" is usually inside a wall.
 - Under `prefers-reduced-motion` the view opens already seated and "Replay walk" is hidden; Escape or "Skip" ends the walk at any time, and focus moves into the 3D view when the Skip button disappears.
 - The avatar is a round mascot holding popcorn rather than a person — it stays cute and avoids picking anyone's appearance.
+
+## Trailers and video
+
+- `data/movies.json` holds 9 trailers verified on 2026-11-19, each uploaded by the studio's or distributor's own channel (Lionsgate Movies, Warner Bros., Paramount Pictures, Walt Disney Animation Studios, Netflix, Universal Pictures, Marvel Studios Canada, GODZILLA OFFICIAL by TOHO) — the brief allows official channels only.
+- Where the newest trailer was only found on aggregator channels, the studio's own teaser or earlier trailer was used instead — the channel rule matters more than which cut it is.
+- Focker-In-Law was left out: the only studio upload found was on a regional Paramount channel, not Universal's — when in doubt, leave it out.
+- Uploads by theatre chains (including Cineplex's own channel) were not used — they are neither studios nor distributors, and this app is unaffiliated with Cineplex.
+- `npm run verify:trailers` also fails when a video's uploader no longer matches the recorded `channel` — it catches a video being swapped for a re-upload.
+- The player is our own iframe with the exact privacy-enhanced embed URL from the brief plus `enablejsapi` and `origin`, then wrapped by the IFrame Player API — the URL stays as specified and "Tap for sound" can still unmute through the API (falling back to the player's postMessage protocol if the API script is blocked).
+- The screen only turns see-through once the player has loaded; until then the still frame stays on it — a slow player never shows a black hole in the screen.
+- The player mounts 0.4 s after the camera is seated and still, and is removed on "Replay walk" or when leaving the view — no video plays while the avatar walks.
+- The fallback (still frame plus "Open trailer") is used when CSS 3D transforms are unsupported, when the player reports an error (removed, private or not embeddable), when it has not loaded after 15 s, or with `?fallback=1` in the view URL.
+- The WebGL canvas ignores pointer events — drags anywhere outside the picture still turn the view, and clicks on the picture reach YouTube's own controls.
+- A bare 11-character video id is rejected in the paste box — the brief limits input to the watch?v=, youtu.be/, shorts/ and embed/ link forms.

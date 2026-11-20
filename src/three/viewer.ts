@@ -3,6 +3,7 @@ import { VIEW } from '../config/view';
 import type { AuditoriumLayout, SeatPosition } from '../metrics/layout';
 import { buildAuditoriumModel, type AuditoriumModel } from './auditoriumModel';
 import { loadPosterTexture } from './textures';
+import { css3dSupported, VideoScreen, type VideoState } from './videoScreen';
 import { WalkIn, type CameraPose } from './walkIn';
 
 const DEG = Math.PI / 180;
@@ -19,13 +20,18 @@ export interface SeatViewerOptions {
   stage: HTMLElement;
   layout: AuditoriumLayout;
   seat: SeatPosition;
-  /** YouTube id whose still frame is shown on the screen. */
+  /** YouTube id: its still frame shows on the screen, and the video plays once seated. */
   videoId: string | null;
+  /** Used as the player's accessible title. */
+  videoTitle?: string;
+  /** Skip the embedded player and keep the still frame (the "Open trailer" fallback). */
+  forceVideoFallback?: boolean;
   /** Start with the walk-in animation. Ignored when `reducedMotion` is set. */
   walkIn?: boolean;
   /** Cut every animation (prefers-reduced-motion). */
   reducedMotion?: boolean;
   onModeChange?(mode: ViewerMode): void;
+  onVideoStateChange?(state: VideoState): void;
 }
 
 /**
@@ -46,6 +52,9 @@ export class SeatViewer {
   private mode: ViewerMode = 'seated';
   private walk: WalkIn | null = null;
   private lastFrame = 0;
+  private video: VideoScreen | null = null;
+  private videoStatus: VideoState = 'idle';
+  private mountTimer = 0;
   /** Look offsets from straight at the screen centre, in degrees. Positive = right / up. */
   private yaw = 0;
   private pitch = 0;
@@ -60,11 +69,7 @@ export class SeatViewer {
     this.seat = seat;
 
     // Throws when WebGL is unavailable; the caller shows a message instead.
-    this.renderer = new WebGLRenderer({
-      antialias: window.devicePixelRatio < 2,
-      alpha: true,
-      powerPreference: 'high-performance',
-    });
+    this.renderer = new WebGLRenderer({ antialias: window.devicePixelRatio < 2, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.domElement.classList.add('view__canvas');
@@ -73,6 +78,20 @@ export class SeatViewer {
 
     this.model = buildAuditoriumModel(layout, seat);
     this.scene.add(this.model.group);
+
+    if (options.videoId) {
+      if (options.forceVideoFallback || !css3dSupported()) {
+        this.videoStatus = 'failed';
+      } else {
+        this.video = new VideoScreen(
+          stage,
+          this.model.videoRect,
+          options.videoId,
+          options.videoTitle ?? 'YouTube',
+          (state) => this.handleVideoState(state),
+        );
+      }
+    }
 
     if (options.videoId) {
       void loadPosterTexture(options.videoId).then((texture) => {
@@ -90,13 +109,26 @@ export class SeatViewer {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(stage);
     this.bindInput();
-    if (options.walkIn !== false && !options.reducedMotion) this.startWalk();
-    else this.updateCamera();
+    if (options.walkIn !== false && !options.reducedMotion) {
+      this.startWalk();
+    } else {
+      this.updateCamera();
+      this.scheduleVideo();
+    }
     this.frame = requestAnimationFrame(this.tick);
   }
 
   get currentMode(): ViewerMode {
     return this.mode;
+  }
+
+  get videoState(): VideoState {
+    return this.videoStatus;
+  }
+
+  /** "Tap for sound". Call from a click handler. */
+  unmuteVideo(): void {
+    this.video?.unmute();
   }
 
   /** Plays the walk from the door to the seat again. */
@@ -151,6 +183,8 @@ export class SeatViewer {
     this.events.abort();
     this.resizeObserver.disconnect();
     this.endWalk();
+    window.clearTimeout(this.mountTimer);
+    this.video?.dispose();
     this.model.dispose();
     this.renderer.dispose();
     this.renderer.forceContextLoss();
@@ -160,11 +194,33 @@ export class SeatViewer {
   private setMode(mode: ViewerMode): void {
     if (mode === this.mode) return;
     this.mode = mode;
+    if (mode === 'seated') this.scheduleVideo();
     this.options.onModeChange?.(mode);
+  }
+
+  /** Mounts the player once the camera has been seated and still for a moment. */
+  private scheduleVideo(): void {
+    window.clearTimeout(this.mountTimer);
+    if (!this.video || this.video.mounted) return;
+    this.mountTimer = window.setTimeout(() => {
+      if (this.mode !== 'seated') return;
+      if (this.recentring || this.drag) this.scheduleVideo();
+      else this.video?.mount();
+    }, 400);
+  }
+
+  private handleVideoState(state: VideoState): void {
+    this.videoStatus = state;
+    // The picture shows through the canvas only while the player is actually there.
+    this.model.setVideoHole(state === 'muted' || state === 'playing');
+    this.invalidate();
+    this.options.onVideoStateChange?.(state);
   }
 
   private startWalk(): void {
     this.endWalk();
+    window.clearTimeout(this.mountTimer);
+    this.video?.unmount();
     this.yaw = 0;
     this.pitch = 0;
     this.recentring = null;
@@ -202,6 +258,7 @@ export class SeatViewer {
     const { clientWidth: width, clientHeight: height } = this.options.stage;
     if (width === 0 || height === 0) return;
     this.renderer.setSize(width, height);
+    this.video?.setSize(width, height);
     const aspect = width / height;
     const vertical = (2 * Math.atan(Math.tan((VIEW.horizontalFov * DEG) / 2) / aspect)) / DEG;
     this.camera.aspect = aspect;
@@ -242,6 +299,7 @@ export class SeatViewer {
       this.lastFrame = now;
       this.walk.update(delta, this.camera);
       this.renderer.render(this.scene, this.camera);
+      this.video?.render(this.camera);
       if (this.walk.done) this.finishWalk();
       return;
     }
@@ -257,6 +315,7 @@ export class SeatViewer {
     if (!this.dirty) return;
     this.dirty = false;
     this.renderer.render(this.scene, this.camera);
+    this.video?.render(this.camera);
   };
 
   private bindInput(): void {

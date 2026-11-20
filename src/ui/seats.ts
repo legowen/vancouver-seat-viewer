@@ -79,6 +79,13 @@ export function seatsScreen(context: AppContext, route: SeatsRoute): Screen {
   const eyebrow = h('p', { class: 'eyebrow' });
   const title = h('h1', { class: 'page__title' });
   const badges = h('div', { class: 'card__badges' });
+  const trailerLine = h('p', { class: 'trailer-line' });
+  const trailerHref = routeToHash({
+    name: 'trailer',
+    theatreId: route.theatreId,
+    auditoriumId: route.auditoriumId,
+  });
+  const movie = context.data.movies.find((entry) => entry.youtubeId === route.videoId);
 
   function renderCard(): void {
     const current = rated.get(selected);
@@ -117,6 +124,16 @@ export function seatsScreen(context: AppContext, route: SeatsRoute): Screen {
     eyebrow.textContent = `${theatreName(entry.theatre)} · ${auditoriumName(auditorium)}`;
     title.textContent = t('seats.title');
     badges.replaceChildren(...auditoriumBadges(auditorium).filter((badge) => badge !== null));
+    const trailerTitle = route.videoId ? (movie?.title ?? t('trailer.pasted')) : null;
+    trailerLine.replaceChildren(
+      h(
+        'span',
+        null,
+        trailerTitle ? t('trailer.chosen', { title: trailerTitle }) : t('trailer.none'),
+      ),
+      ' · ',
+      h('a', { href: trailerHref }, t('trailer.change')),
+    );
     legendTitle.textContent = t('seats.legend');
     legend.replaceChildren(
       ...BANDS.map((band) =>
@@ -138,7 +155,7 @@ export function seatsScreen(context: AppContext, route: SeatsRoute): Screen {
     'div',
     { class: 'page page--wide page--seats' },
     back,
-    h('header', { class: 'page__header' }, eyebrow, title, badges),
+    h('header', { class: 'page__header' }, eyebrow, title, badges, trailerLine),
     h(
       'div',
       { class: 'seats-layout' },

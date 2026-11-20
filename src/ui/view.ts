@@ -1,11 +1,13 @@
-import { h } from '../app/dom';
+import { h, s } from '../app/dom';
 import { routeToHash, type Route } from '../app/routes';
 import type { AppContext, Screen } from '../app/types';
 import { findAuditorium, findTheatre } from '../data/loader';
 import { t } from '../i18n';
 import { rateLayout } from '../metrics';
 import { findSeat, resolveAuditorium } from '../metrics/layout';
+import type { VideoState } from '../three/videoScreen';
 import { SeatViewer, type ViewerMode } from '../three/viewer';
+import { watchUrl } from '../youtube/embed';
 import { auditoriumName, estimatedBadge } from './common';
 import { notFoundScreen } from './notFound';
 import { bandPill, seatName, seatStats, verdictText } from './seatInfo';
@@ -32,6 +34,8 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
   if (!seat) return notFoundScreen('error.seat');
   const ratedSeats = rateLayout(layout);
   const rated = ratedSeats.get(seat.key)!;
+  const movie = context.data.movies.find((entry) => entry.youtubeId === route.videoId);
+  const videoTitle = movie?.title ?? t('trailer.pasted');
 
   const changeSeatHref = routeToHash({
     name: 'seats',
@@ -70,12 +74,52 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
   const status = h('p', { class: 'visually-hidden', role: 'status' });
   stage.append(h('div', { class: 'view__toolbar' }, h('span'), skipButton, recentreButton));
 
+  // Sound is off at first, because browsers only autoplay muted video.
+  const soundLabel = h('span');
+  const soundButton = h(
+    'button',
+    {
+      type: 'button',
+      class: 'chip chip--accent chip--large',
+      hidden: true,
+      onclick: () => viewer?.unmuteVideo(),
+    },
+    speakerIcon(),
+    soundLabel,
+  );
+  // Shown when the player cannot run here: the still frame stays on the screen instead.
+  const openLabel = h('span');
+  const openLink = route.videoId
+    ? h(
+        'a',
+        {
+          class: 'chip chip--large',
+          href: watchUrl(route.videoId),
+          target: '_blank',
+          rel: 'noopener noreferrer',
+          hidden: true,
+        },
+        playIcon(),
+        openLabel,
+      )
+    : null;
+  stage.append(h('div', { class: 'view__overlay' }, soundButton, openLink));
+
   const card = h('section', { class: 'seat-card' });
   const el = h('div', { class: 'view' }, stage, card, status);
+
+  let videoState: VideoState = 'idle';
+  const applyVideoState = (next: VideoState): void => {
+    videoState = next;
+    el.dataset.video = next;
+    soundButton.hidden = next !== 'muted';
+    if (openLink) openLink.hidden = next !== 'failed' || mode !== 'seated';
+  };
 
   const applyMode = (next: ViewerMode): void => {
     mode = next;
     el.dataset.mode = next;
+    applyVideoState(videoState);
     const hadFocus = skipButton.contains(document.activeElement);
     skipButton.hidden = next !== 'walking';
     recentreButton.hidden = next !== 'seated' || !viewer;
@@ -92,6 +136,9 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     skipButton.textContent = t('view.skip');
     recentreButton.textContent = t('view.recentre');
     replayButton.textContent = t('view.replay');
+    soundLabel.textContent = t('video.tapForSound');
+    openLabel.textContent = t('video.open');
+    if (openLink) openLink.title = t('video.openHint');
     card.replaceChildren(
       h(
         'div',
@@ -137,16 +184,21 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
       layout,
       seat,
       videoId: route.videoId,
+      videoTitle: t('video.iframeTitle', { title: videoTitle }),
+      forceVideoFallback: route.forceFallback,
       reducedMotion,
       onModeChange: applyMode,
+      onVideoStateChange: applyVideoState,
     });
     applyMode(viewer.currentMode);
+    applyVideoState(viewer.videoState);
   } catch (cause) {
     console.error('Could not start the 3D view', cause);
     skipButton.hidden = true;
     recentreButton.hidden = true;
     replayButton.hidden = true;
     stage.append(h('p', { class: 'view__error', role: 'alert' }, t('view.noWebgl')));
+    if (openLink) openLink.hidden = false;
   }
 
   return {
@@ -156,4 +208,27 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     relocalize: renderText,
     destroy: () => viewer?.dispose(),
   };
+}
+
+function speakerIcon(): SVGSVGElement {
+  return s(
+    'svg',
+    { class: 'chip__icon', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' },
+    s('path', { d: 'M4 9h4l5-4v14l-5-4H4z', fill: 'currentColor' }),
+    s('path', {
+      d: 'M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+    }),
+  );
+}
+
+function playIcon(): SVGSVGElement {
+  return s(
+    'svg',
+    { class: 'chip__icon', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' },
+    s('path', { d: 'M8 5v14l11-7z', fill: 'currentColor' }),
+  );
 }

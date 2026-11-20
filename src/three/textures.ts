@@ -1,5 +1,6 @@
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace, TextureLoader, type Texture } from 'three';
 import { seededRandom } from '../scene/random';
+import { thumbnailUrl } from '../youtube/embed';
 
 // Every texture is drawn on a canvas at runtime: the app ships no image or model files.
 
@@ -121,7 +122,7 @@ export function loadPosterTexture(videoId: string): Promise<Texture | null> {
     const loader = new TextureLoader();
     loader.setCrossOrigin('anonymous');
     loader.load(
-      `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`,
+      thumbnailUrl(videoId),
       (texture) => {
         texture.colorSpace = SRGBColorSpace;
         // hqdefault is 4:3 with black bars above and below a 16:9 frame. Show only the frame.
