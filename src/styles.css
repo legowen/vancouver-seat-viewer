@@ -1448,3 +1448,88 @@ code {
 .field-grid--aisles {
   align-items: end;
 }
+
+/* ---------- Seated view: fill toggle, fallback note, folding card ---------- */
+
+.view__video-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.view__video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.view__overlay {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.view__note {
+  max-width: 340px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgb(16 16 22 / 0.8);
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.seat-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.seat-card {
+  position: relative;
+}
+
+.seat-card__fold {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.seat-card--folded .seat-card__fold svg {
+  transform: rotate(180deg);
+}
+
+/* Leave room for the fold button next to the mini map. */
+.seat-card__summary {
+  padding-right: 44px;
+}
+
+.seat-card--folded .seat-card__verdict,
+.seat-card--folded .seat-card__stats,
+.seat-card--folded .seat-card__links,
+.seat-card--folded .seat-card__map {
+  display: none;
+}

@@ -149,5 +149,10 @@
   "seats.nudgeDown": "靠后的一排",
   "editor.aisleWidth": "过道宽度",
   "editor.aisleOption": "{count} 个座位宽",
-  "editor.alignAisles": "让各排的过道对齐成直线"
+  "editor.alignAisles": "让各排的过道对齐成直线",
+  "video.fillScreen": "填满银幕",
+  "video.fitVideo": "完整显示",
+  "video.trouble": "视频没有显示？",
+  "view.hideDetails": "收起详情",
+  "view.showDetails": "展开详情"
 }

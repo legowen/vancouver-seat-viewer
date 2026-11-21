@@ -1,4 +1,12 @@
-import { Vector3, type PerspectiveCamera, type Quaternion } from 'three';
+import {
+  ConeGeometry,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  Vector3,
+  type PerspectiveCamera,
+  type Quaternion,
+} from 'three';
 import { WALK } from '../config/walk';
 import type { AuditoriumLayout, SeatPosition } from '../metrics/layout';
 import { roomShape, type RoomShape } from '../scene/room';
@@ -25,6 +33,10 @@ export interface CameraPose {
  */
 export class WalkIn {
   readonly avatar: Avatar;
+  /** The avatar plus the arrow over the target seat: add this to the scene. */
+  readonly group = new Group();
+  private readonly marker: Mesh<ConeGeometry, MeshBasicMaterial>;
+  private readonly markerY: number;
   readonly plan: WalkPlan;
   private readonly room: RoomShape;
   private elapsed = 0;
@@ -42,6 +54,15 @@ export class WalkIn {
     this.room = roomShape(layout);
     this.plan = planWalk(layout, seat);
     this.avatar = createAvatar();
+    // A soft arrow bobbing over the seat being walked to.
+    this.marker = new Mesh(
+      new ConeGeometry(0.11, 0.24, 16),
+      new MeshBasicMaterial({ color: 0xf5b942, toneMapped: false }),
+    );
+    this.marker.rotation.x = Math.PI;
+    this.markerY = seat.floorY + (layout.auditorium.type === 'vip' ? 1.75 : 1.6);
+    this.marker.position.set(seat.x, this.markerY, seat.z + 0.05);
+    this.group.add(this.avatar.group, this.marker);
     this.heading = pointAlong(this.plan, 0).heading;
   }
 
@@ -73,11 +94,17 @@ export class WalkIn {
     avatar.group.position.set(point.x, smoothFloorAt(this.layout, z), z);
     avatar.group.rotation.y = this.heading;
     const speed = plan.length / plan.walkDuration;
+    const strideNow = walkT < 1 ? Math.min(1, 4 * walkT * (1 - walkT) + 0.25) : 0;
     avatar.pose({
+      lean: Math.min(1, Math.max(0, (speed - 1.8) / 2.5)) * strideNow,
       phase: (travelled / Math.max(0.5, speed * 0.28)) * Math.PI,
-      stride: walkT < 1 ? Math.min(1, 4 * walkT * (1 - walkT) + 0.25) : 0,
+      stride: strideNow,
       sit: settle,
     });
+
+    this.marker.position.y = this.markerY + Math.sin(this.elapsed * 4) * 0.05;
+    // The arrow goes once the avatar sits, or sooner if the camera comes close to it.
+    this.marker.visible = sitT < 0.3 && camera.position.distanceTo(this.marker.position) > 1.4;
 
     if (sitT <= 0) {
       // Frame-rate independent smoothing; the first frame snaps into place.
@@ -146,7 +173,9 @@ export class WalkIn {
   }
 
   dispose(): void {
-    this.avatar.group.removeFromParent();
+    this.group.removeFromParent();
+    this.marker.geometry.dispose();
+    this.marker.material.dispose();
     this.avatar.dispose();
   }
 }

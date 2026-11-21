@@ -149,5 +149,10 @@
   "seats.nudgeDown": "Row further back",
   "editor.aisleWidth": "Aisle width",
   "editor.aisleOption": "{count} seat widths",
-  "editor.alignAisles": "Line the aisles up from row to row"
+  "editor.alignAisles": "Line the aisles up from row to row",
+  "video.fillScreen": "Fill screen",
+  "video.fitVideo": "Fit video",
+  "video.trouble": "Video not showing?",
+  "view.hideDetails": "Hide details",
+  "view.showDetails": "Show details"
 }

@@ -54,7 +54,7 @@ const COLORS = {
   hair: [0x0e0c10, 0x1e1612, 0x2d221b, 0x3c3b42, 0x16100e],
 };
 
-/** Where a 16:9 trailer sits on the screen, in world units. */
+/** A rectangle on the screen plane, in world units. */
 export interface VideoRect {
   width: number;
   height: number;
@@ -64,11 +64,16 @@ export interface VideoRect {
 export interface AuditoriumModel {
   group: Group;
   room: RoomShape;
+  /** Where a 16:9 trailer sits when shown whole, with side bars on a wide screen. */
   videoRect: VideoRect;
+  /** The whole screen, which a cropped ("fill screen") trailer covers. */
+  screenRect: VideoRect;
   /** Shows a still frame in the 16:9 area of the screen, or the plain glow when null. */
   setPoster(texture: Texture | null): void;
-  /** Makes the 16:9 area transparent so a video layer under the canvas shows through. */
+  /** Makes the picture area transparent so a video layer under the canvas shows through. */
   setVideoHole(open: boolean): void;
+  /** Crops the picture (still frame or video) to cover the whole screen instead of fitting. */
+  setPictureFill(fill: boolean): void;
   /** Gives one seat a warm highlight, e.g. the seat being walked to. */
   highlightSeat(seat: SeatPosition | null): void;
   /** Re-seats the crowd for someone sitting in `seat`. */
@@ -274,18 +279,47 @@ export function buildAuditoriumModel(
     height: videoHeight,
     center: new Vector3(0, screen.centerY, 0.01),
   };
+  const screenRect: VideoRect = {
+    width: screen.width,
+    height: screen.height,
+    center: videoRect.center.clone(),
+  };
   const posterMaterial = own(new MeshBasicMaterial({ toneMapped: false }));
   const holeMaterial = own(
     // Writes transparent black: the canvas becomes see-through here and the video below
     // shows, while anything nearer the camera (heads, seats) still draws over it.
     new MeshBasicMaterial({ color: 0x000000, opacity: 0, blending: NoBlending }),
   );
-  const pictureGeometry = new PlaneGeometry(videoRect.width, videoRect.height);
-  pictureGeometry.translate(videoRect.center.x, videoRect.center.y, videoRect.center.z);
-  const picture = add(pictureGeometry, posterMaterial, 'screen picture');
+  // Centred on its own origin, so "fill screen" can simply scale it up to the screen's size.
+  const picture = add(
+    new PlaneGeometry(videoRect.width, videoRect.height),
+    posterMaterial,
+    'screen picture',
+  );
+  picture.position.copy(videoRect.center);
   picture.visible = false;
   let poster: Texture | null = null;
   let holeOpen = false;
+  let fill = false;
+
+  /** Shows the part of the still frame that the picture area covers. */
+  const cropPoster = () => {
+    if (!poster) return;
+    // hqdefault.jpg is 4:3 with black bars around a 16:9 frame; the frame is its middle 75%.
+    const frame = { x: 0, y: 0.125, width: 1, height: 0.75 };
+    const frameAspect = 16 / 9;
+    const screenAspect = screen.width / screen.height;
+    if (fill && screenAspect > frameAspect) {
+      // A wider screen shows the frame's full width and loses some of its top and bottom.
+      frame.height *= frameAspect / screenAspect;
+      frame.y = 0.5 - frame.height / 2;
+    } else if (fill && screenAspect < frameAspect) {
+      frame.width = screenAspect / frameAspect;
+      frame.x = 0.5 - frame.width / 2;
+    }
+    poster.repeat.set(frame.width, frame.height);
+    poster.offset.set(frame.x, frame.y);
+  };
 
   const refreshScreen = () => {
     const showPicture = holeOpen || poster !== null;
@@ -463,15 +497,26 @@ export function buildAuditoriumModel(
     group,
     room,
     videoRect,
+    screenRect,
     setPoster(texture) {
       poster = texture;
       posterMaterial.map = texture;
       posterMaterial.needsUpdate = true;
+      cropPoster();
       refreshScreen();
     },
     setVideoHole(open) {
       holeOpen = open;
       refreshScreen();
+    },
+    setPictureFill(next) {
+      fill = next;
+      picture.scale.set(
+        fill ? screenRect.width / videoRect.width : 1,
+        fill ? screenRect.height / videoRect.height : 1,
+        1,
+      );
+      cropPoster();
     },
     highlightSeat,
     setViewerSeat,

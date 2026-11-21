@@ -149,5 +149,10 @@
   "seats.nudgeDown": "뒤쪽 열",
   "editor.aisleWidth": "통로 너비",
   "editor.aisleOption": "좌석 {count}개 너비",
-  "editor.alignAisles": "열마다 통로를 일직선으로 맞추기"
+  "editor.alignAisles": "열마다 통로를 일직선으로 맞추기",
+  "video.fillScreen": "스크린 채우기",
+  "video.fitVideo": "영상 전체 보기",
+  "video.trouble": "영상이 안 보이나요?",
+  "view.hideDetails": "자세한 정보 접기",
+  "view.showDetails": "자세한 정보 펼치기"
 }

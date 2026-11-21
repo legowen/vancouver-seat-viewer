@@ -103,9 +103,54 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
         openLabel,
       )
     : null;
-  stage.append(h('div', { class: 'view__overlay' }, soundButton, openLink));
+  const fallbackNote = h('p', { class: 'view__note', hidden: true });
+  stage.append(
+    h('div', { class: 'view__overlay' }, h('div', null, soundButton, openLink), fallbackNote),
+  );
+
+  // Wide screens can show a 16:9 trailer whole (with side bars) or cropped to fill them.
+  const screenAspect = layout.screen.width / layout.screen.height;
+  let fill = false;
+  const fillButton = h('button', {
+    type: 'button',
+    class: 'link-button',
+    'aria-pressed': 'false',
+    hidden: !route.videoId || Math.abs(screenAspect - 16 / 9) < 0.1,
+    onclick: () => {
+      fill = !fill;
+      viewer?.setVideoFill(fill);
+      fillButton.setAttribute('aria-pressed', String(fill));
+      fillButton.textContent = fill ? t('video.fitVideo') : t('video.fillScreen');
+    },
+  });
+  const troubleButton = h('button', {
+    type: 'button',
+    class: 'link-button',
+    hidden: true,
+    onclick: () => viewer?.giveUpVideo(),
+  });
+
+  // Folding the card hides the details and gives the 3D view more room on small phones.
+  let folded = false;
+  const foldButton = h('button', {
+    type: 'button',
+    class: 'seat-card__fold',
+    'aria-expanded': 'true',
+    onclick: () => {
+      folded = !folded;
+      applyFold();
+    },
+  });
+  foldButton.append(chevronIcon());
 
   const card = h('section', { class: 'seat-card' });
+  const applyFold = (): void => {
+    card.classList.toggle('seat-card--folded', folded);
+    foldButton.setAttribute('aria-expanded', String(!folded));
+    const label = folded ? t('view.showDetails') : t('view.hideDetails');
+    foldButton.setAttribute('aria-label', label);
+    foldButton.title = label;
+  };
   const el = h('div', { class: 'view' }, stage, card, status);
 
   let videoState: VideoState = 'idle';
@@ -113,7 +158,10 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     videoState = next;
     el.dataset.video = next;
     soundButton.hidden = next !== 'muted';
-    if (openLink) openLink.hidden = next !== 'failed' || mode !== 'seated';
+    const showFallback = next === 'failed' && mode === 'seated';
+    if (openLink) openLink.hidden = !showFallback;
+    fallbackNote.hidden = !showFallback;
+    troubleButton.hidden = !['loading', 'muted', 'playing'].includes(next);
   };
 
   const applyMode = (next: ViewerMode): void => {
@@ -139,7 +187,12 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
     soundLabel.textContent = t('video.tapForSound');
     openLabel.textContent = t('video.open');
     if (openLink) openLink.title = t('video.openHint');
+    fallbackNote.textContent = t('video.openHint');
+    fillButton.textContent = fill ? t('video.fitVideo') : t('video.fillScreen');
+    troubleButton.textContent = t('video.trouble');
+    applyFold();
     card.replaceChildren(
+      foldButton,
       h(
         'div',
         { class: 'seat-card__summary' },
@@ -155,6 +208,7 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
           h('h1', { class: 'seat-card__title' }, name),
           h('p', { class: 'seat-card__verdict' }, verdictText(rated)),
           h('p', { class: 'seat-card__stats' }, seatStats(rated)),
+          route.videoId ? h('p', { class: 'seat-card__links' }, fillButton, troubleButton) : null,
         ),
         seatMapThumbnail(layout, ratedSeats, {
           label: t('view.miniMap'),
@@ -178,6 +232,22 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
   };
   const title = renderText();
 
+  /** No 3D view (no WebGL, or the context never came back): say so, keep the trailer link. */
+  function showUnavailable(): void {
+    viewer?.dispose();
+    viewer = null;
+    skipButton.hidden = true;
+    recentreButton.hidden = true;
+    replayButton.hidden = true;
+    soundButton.hidden = true;
+    fillButton.hidden = true;
+    troubleButton.hidden = true;
+    if (!stage.querySelector('.view__error')) {
+      stage.append(h('p', { class: 'view__error', role: 'alert' }, t('view.noWebgl')));
+    }
+    if (openLink) openLink.hidden = false;
+  }
+
   try {
     viewer = new SeatViewer({
       stage,
@@ -189,16 +259,13 @@ export function viewScreen(context: AppContext, route: ViewRoute): Screen {
       reducedMotion,
       onModeChange: applyMode,
       onVideoStateChange: applyVideoState,
+      onContextLost: () => showUnavailable(),
     });
     applyMode(viewer.currentMode);
     applyVideoState(viewer.videoState);
   } catch (cause) {
     console.error('Could not start the 3D view', cause);
-    skipButton.hidden = true;
-    recentreButton.hidden = true;
-    replayButton.hidden = true;
-    stage.append(h('p', { class: 'view__error', role: 'alert' }, t('view.noWebgl')));
-    if (openLink) openLink.hidden = false;
+    showUnavailable();
   }
 
   return {
@@ -221,6 +288,21 @@ function speakerIcon(): SVGSVGElement {
       stroke: 'currentColor',
       'stroke-width': 2,
       'stroke-linecap': 'round',
+    }),
+  );
+}
+
+function chevronIcon(): SVGSVGElement {
+  return s(
+    'svg',
+    { class: 'chip__icon', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false' },
+    s('path', {
+      d: 'M6 9l6 6 6-6',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2.4,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
     }),
   );
 }

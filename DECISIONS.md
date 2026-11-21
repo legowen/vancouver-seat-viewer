@@ -97,6 +97,22 @@ Choices made where the brief left room, one line each: the decision, then why.
 - The editor works entirely in the browser (download or copy the JSON) and is only reachable at `#/editor` — the brief asks for a hidden page and a static site.
 - An editor draft survives a language switch (it is kept in memory) but not a reload — anything more would mean storing seat maps in the browser.
 
+## Ported from the earlier build
+
+An earlier, separate build of the same brief had several touches this one lacked; these were
+brought over on 2026-11-20.
+
+- The seat card has four nudge buttons, and is built once so a pressed nudge keeps focus — seats can be 11 px wide on a phone, and rebuilding the card would drop focus after every press.
+- Prime seats carry a dot and seats to avoid a slash, on the map and in the legend; Windows high-contrast mode gets outlines, the shapes and a filled selection — colour alone fails colour-blind users and disappears in forced-colours mode.
+- A selection changed by a tap or a nudge is announced in a live region, and every seat button is described by the card's verdict — arrow-key users already hear the seat's own label when it takes focus, so it is not read twice.
+- "Fill screen" crops the 16:9 trailer (or its still frame) to cover a wide screen, and is only offered when the screen's shape differs from 16:9 — showing the whole picture with side bars stays the default, as cinemas do with flat trailers.
+- "Video not showing?" drops the player by hand and returns to the still frame with "Open trailer" — some failures (an extension blocking YouTube, a stalled player) never raise an error the app can see.
+- The seat card can be folded down to the seat and its buttons — it gives the 3D view more room on small phones.
+- A lost WebGL context gets 6 s to come back before the "can't show the 3D view" message — phones drop contexts under memory pressure and usually return them; three.js re-uploads everything when they do.
+- A small arrow bobs over the target seat during the walk and hides once the avatar sits or the camera comes within 1.4 m — it shows where the walk is heading before the seat is in plain view.
+- The avatar leans forward on long walks squeezed into a few seconds — fast walking looks like running instead of a stiff glide.
+- Not ported: the earlier build's camera view offset — there the card covered the bottom of the 3D view; here it sits below the view, so nothing hides the screen.
+
 ## Polish and deployment
 
 - On short landscape screens the seat card moves beside the 3D view, and the mini map is hidden there — stacked, the card's buttons fell off a 360 px-tall phone screen.

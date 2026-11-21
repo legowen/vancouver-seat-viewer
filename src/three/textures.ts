@@ -125,9 +125,6 @@ export function loadPosterTexture(videoId: string): Promise<Texture | null> {
       thumbnailUrl(videoId),
       (texture) => {
         texture.colorSpace = SRGBColorSpace;
-        // hqdefault is 4:3 with black bars above and below a 16:9 frame. Show only the frame.
-        texture.repeat.set(1, 0.75);
-        texture.offset.set(0, 0.125);
         resolve(texture);
       },
       undefined,

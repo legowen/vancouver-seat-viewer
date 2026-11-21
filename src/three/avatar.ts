@@ -20,6 +20,8 @@ export interface AvatarPose {
   stride: number;
   /** 0 standing … 1 seated. */
   sit: number;
+  /** 0 upright … 1 leaning into a run, on long walks squeezed into a few seconds. */
+  lean?: number;
 }
 
 export interface Avatar {
@@ -123,7 +125,7 @@ export function createAvatar(): Avatar {
 
   return {
     group,
-    pose({ phase, stride, sit }) {
+    pose({ phase, stride, sit, lean = 0 }) {
       const swing = Math.sin(phase) * 0.65 * stride * (1 - sit);
       legs[0]!.rotation.x = swing - (Math.PI / 2) * sit;
       legs[1]!.rotation.x = -swing - (Math.PI / 2) * sit;
@@ -134,6 +136,8 @@ export function createAvatar(): Avatar {
       torso.position.y = bob + SEAT_HOP * sit;
       legs.forEach((leg) => (leg.position.y = HIP_Y + SEAT_HOP * sit));
       head.rotation.z = Math.sin(phase * 0.5) * 0.06 * stride;
+      // Tips the whole upper body forward from the feet.
+      torso.rotation.x = 0.24 * lean * (1 - sit);
     },
     dispose() {
       for (const item of owned) item.dispose();
