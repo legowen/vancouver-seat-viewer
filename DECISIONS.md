@@ -111,6 +111,8 @@ brought over on 2026-11-20.
 - A lost WebGL context gets 6 s to come back before the "can't show the 3D view" message — phones drop contexts under memory pressure and usually return them; three.js re-uploads everything when they do.
 - A small arrow bobs over the target seat during the walk and hides once the avatar sits or the camera comes within 1.4 m — it shows where the walk is heading before the seat is in plain view.
 - The avatar leans forward on long walks squeezed into a few seconds — fast walking looks like running instead of a stiff glide.
+- The browser smoke test (`npm run smoke`, `scripts/smoke.mjs`) clicks through every screen at phone width with YouTube stubbed out and fails on console errors or overflow; Playwright is not a dependency, and the script falls back to the installed Chrome or Edge when Playwright's own Chromium is missing — `npm ci` and CI stay small, and it still runs on a machine without a browser download.
+- The earlier build's `.claude/agents/`, `.claude/skills/` and `docs/spec.md` were brought over and pointed at this build's files (parser, tests, verdict keys, smoke script) — later sessions get the same reviewer, translator and research help.
 - Not ported: the earlier build's camera view offset — there the card covered the bottom of the 3D view; here it sits below the view, so nothing hides the screen.
 
 ## Polish and deployment

@@ -47,15 +47,22 @@ npm run dev
 
 Then open http://localhost:5173/vancouver-seat-viewer/.
 
-| Command                   | What it does                                                     |
-| ------------------------- | ---------------------------------------------------------------- |
-| `npm run dev`             | Development server with hot reload                               |
-| `npm run build`           | Type-check, then build the static site into `dist/`              |
-| `npm run preview`         | Serve the built site locally                                     |
-| `npm test`                | Unit tests (Vitest), including validation of every data file     |
-| `npm run lint`            | ESLint, then a Prettier check                                    |
-| `npm run format`          | Format everything with Prettier                                  |
-| `npm run verify:trailers` | Re-check every trailer in `data/movies.json` with YouTube oEmbed |
+| Command                     | What it does                                                          |
+| --------------------------- | --------------------------------------------------------------------- |
+| `npm run dev`               | Development server with hot reload                                    |
+| `npm run build`             | Type-check, then build the static site into `dist/`                   |
+| `npm run preview`           | Serve the built site locally                                          |
+| `npm test`                  | Unit tests (Vitest), including validation of every data file          |
+| `npm run lint`              | ESLint, then a Prettier check                                         |
+| `npm run format`            | Format everything with Prettier                                       |
+| `npm run verify:trailers`   | Re-check every trailer in `data/movies.json` with YouTube oEmbed      |
+| `npm run import:auditorium` | Turn a seat map typed in the compact format into a data file          |
+| `npm run smoke`             | Click through the built site in a headless browser (needs Playwright) |
+
+`npm run smoke` serves `dist/` (run `npm run build` first), walks through every screen at phone
+width with YouTube stubbed out, and fails on console errors or horizontal overflow. It needs the
+`playwright` package (`npm i -D playwright`), which is not a dependency so that `npm ci` stays
+small; it uses Playwright's Chromium if installed, otherwise your Chrome or Edge.
 
 ## Deploy
 
@@ -118,7 +125,12 @@ display names (`names`, `areaNames` in `theatre.json`).
   route and room planning, `src/three/` everything that draws, and `src/ui/` the screens.
 - The 3D code is loaded only when you first open a seat. Seats and heads are instanced,
   the pixel ratio is capped at 2, and frames are drawn only when something changes.
-- [`DECISIONS.md`](DECISIONS.md) records the choices made along the way and why.
+- [`DECISIONS.md`](DECISIONS.md) records the choices made along the way and why, and
+  [`docs/spec.md`](docs/spec.md) is the original brief.
+- For Claude Code sessions, `.claude/agents/` holds a read-only reviewer, a translator for the
+  locale files and a trailer researcher, and `.claude/skills/` holds project skills for adding
+  auditoriums and for the seat metrics, plus a few vendored three.js and design skills
+  (licences in `.claude/skills/THIRD_PARTY.md`).
 
 ## Privacy
 
