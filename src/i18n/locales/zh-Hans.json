@@ -140,5 +140,11 @@
   "editor.error.duplicateLabel": "第 {line} 行：{label} 排出现了两次。",
   "editor.error.duplicateSeat": "第 {line} 行：{label} 排的 {seat} 号座位出现了两次。",
   "editor.error.noSeats": "第 {line} 行：{label} 排没有座位。",
-  "editor.error.tooManySeats": "第 {line} 行：{label} 排超过 80 个座位。"
+  "editor.error.tooManySeats": "第 {line} 行：{label} 排超过 80 个座位。",
+  "seats.status": "{seat}，{band}。{verdict}",
+  "seats.nudgeGroup": "移动所选座位",
+  "seats.nudgeLeft": "左边的座位",
+  "seats.nudgeRight": "右边的座位",
+  "seats.nudgeUp": "靠近银幕的一排",
+  "seats.nudgeDown": "靠后的一排"
 }

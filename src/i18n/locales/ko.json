@@ -140,5 +140,11 @@
   "editor.error.duplicateLabel": "{line}번째 줄: {label}열이 두 번 나와요.",
   "editor.error.duplicateSeat": "{line}번째 줄: {label}열에 {seat}번 좌석이 두 번 나와요.",
   "editor.error.noSeats": "{line}번째 줄: {label}열에 좌석이 없어요.",
-  "editor.error.tooManySeats": "{line}번째 줄: {label}열의 좌석이 80석을 넘어요."
+  "editor.error.tooManySeats": "{line}번째 줄: {label}열의 좌석이 80석을 넘어요.",
+  "seats.status": "{seat}, {band}. {verdict}",
+  "seats.nudgeGroup": "선택한 좌석 옮기기",
+  "seats.nudgeLeft": "왼쪽 좌석",
+  "seats.nudgeRight": "오른쪽 좌석",
+  "seats.nudgeUp": "스크린 쪽 앞 열",
+  "seats.nudgeDown": "뒤쪽 열"
 }

@@ -902,11 +902,6 @@ code {
   font-size: 0.8125rem;
 }
 
-.seat-card__take {
-  margin-top: 8px;
-  font-size: 1.0625rem;
-}
-
 /* On phones the card sticks to the bottom so "Take this seat" is always in reach. */
 @media (max-width: 899px) {
   .seat-card--panel {
@@ -1332,5 +1327,120 @@ code {
 
   .seat-card__map {
     display: none;
+  }
+}
+
+/* ---------- Band shapes: colour is not the only cue ---------- */
+
+/* A dot on prime seats and a slash through seats to avoid, on the map and in the legend. */
+.seat[data-band='prime']::after,
+.seat[data-band='avoid']::after,
+.legend__item[data-band='prime'] .legend__swatch::after,
+.legend__item[data-band='avoid'] .legend__swatch::after {
+  content: '';
+  position: absolute;
+  background: rgb(18 18 23 / 0.62);
+}
+
+.seat[data-band='prime']::after,
+.legend__item[data-band='prime'] .legend__swatch::after {
+  top: 36%;
+  left: 36%;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+}
+
+.seat[data-band='avoid']::after,
+.legend__item[data-band='avoid'] .legend__swatch::after {
+  top: 44%;
+  right: 16%;
+  left: 16%;
+  height: 12%;
+  border-radius: 1px;
+  rotate: -45deg;
+}
+
+.legend__swatch {
+  position: relative;
+}
+
+/* ---------- Nudge buttons on the seat card ---------- */
+
+.seat-card__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.nudges {
+  display: flex;
+  gap: 6px;
+}
+
+.nudge {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nudge:hover {
+  border-color: var(--accent);
+}
+
+.nudge__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.seat-card__take {
+  flex: 1 1 150px;
+  min-width: 0;
+  font-size: 1.0625rem;
+}
+
+/* ---------- Windows high-contrast (forced colours) ---------- */
+
+@media (forced-colors: active) {
+  .seat,
+  .legend__swatch {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  .seat[data-band='prime']::after,
+  .seat[data-band='avoid']::after,
+  .legend__item[data-band='prime'] .legend__swatch::after,
+  .legend__item[data-band='avoid'] .legend__swatch::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  /* Box shadows are dropped in this mode, so the selection becomes a filled seat. */
+  .seat[aria-pressed='true'] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .seat:focus-visible {
+    outline: 2px solid Highlight;
+  }
+
+  .seat-map__screen-bar {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .band-pill {
+    border: 1px solid CanvasText;
   }
 }

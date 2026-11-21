@@ -140,5 +140,11 @@
   "editor.error.duplicateLabel": "Line {line}: row {label} appears twice.",
   "editor.error.duplicateSeat": "Line {line}: seat {seat} appears twice in row {label}.",
   "editor.error.noSeats": "Line {line}: row {label} has no seats.",
-  "editor.error.tooManySeats": "Line {line}: row {label} has more than 80 seats."
+  "editor.error.tooManySeats": "Line {line}: row {label} has more than 80 seats.",
+  "seats.status": "{seat}, {band}. {verdict}",
+  "seats.nudgeGroup": "Move the selection",
+  "seats.nudgeLeft": "Seat to the left",
+  "seats.nudgeRight": "Seat to the right",
+  "seats.nudgeUp": "Row closer to the screen",
+  "seats.nudgeDown": "Row further back"
 }
