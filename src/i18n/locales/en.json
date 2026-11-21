@@ -110,7 +110,7 @@
   "editor.align.left": "On the left",
   "editor.align.right": "On the right",
   "editor.seats": "Seat map",
-  "editor.seatsHelp": "One row per line, from the screen to the back. 1-4 means seats 1 to 4, | is an aisle and _ a missing seat.",
+  "editor.seatsHelp": "One row per line, from the screen to the back. 1-4 means seats 1 to 4, | is an aisle and _ a single missing seat. Rows with the same number of blocks are lined up so their aisles run straight.",
   "editor.dimensions": "Dimensions",
   "editor.auto": "Default",
   "editor.dim.screenWidth": "Screen width",
@@ -146,5 +146,8 @@
   "seats.nudgeLeft": "Seat to the left",
   "seats.nudgeRight": "Seat to the right",
   "seats.nudgeUp": "Row closer to the screen",
-  "seats.nudgeDown": "Row further back"
+  "seats.nudgeDown": "Row further back",
+  "editor.aisleWidth": "Aisle width",
+  "editor.aisleOption": "{count} seat widths",
+  "editor.alignAisles": "Line the aisles up from row to row"
 }

@@ -84,9 +84,12 @@ Choices made where the brief left room, one line each: the decision, then why.
 
 ## Adding auditoriums
 
-- The compact format also accepts commas, `|` without spaces around it, descending ranges (`14-11`) and `#` comment lines — screenshots and hand-typed maps vary, and these cost nothing to support.
+- The compact format also accepts commas, `|` without spaces around it, descending ranges (`14-11`), `#` comments and, through NFKC normalisation, the full-width `：` `｜` `＿` `－` and digits that Korean and Chinese keyboards type — screenshots and hand-typed maps vary, and these cost nothing to support.
+- In the compact format `|` is an aisle two seat widths wide (`| |` a double one), `_` is one missing seat, and rows with the same number of blocks are padded so their aisles line up (outer blocks against the aisle, middle blocks centred); the editor and the importer can change the width or switch alignment off — taken from the earlier build: a one-seat aisle (0.55 m) looked too narrow in 3D, and real aisles run straight from front to back.
 - Parse errors come back as codes with a line number, and the editor turns them into translated sentences — the parser stays testable and language-free.
-- `formatCompact` writes `_` for gaps at the ends of a row and `|` inside it — the JSON cannot tell them apart (both are `null`), and this reads most like the seat map.
+- `formatCompact` writes every gap as `_` — reading that back gives exactly the same rows, with no aisle widening or padding, so loading a file into the editor never changes it.
+- `npm run import:auditorium` and the editor share one parser, and the importer reuses the editor's English error sentences — both always agree on what is wrong and where.
+- The sample auditoriums were regenerated with the importer under the new aisle rules — the seat counts are unchanged, but aisles are now about 1.1 m wide and straight.
 - Auditorium files are written with one row of seats per line — the file then reads like the seat map and diffs stay small.
 - Editor sliders start on "Default", and a dimension is only written to the file once its box is unticked — untouched values keep following `src/config/defaults.ts`.
 - The editor previews the rows that parsed even while another field still has a problem — it is easier to fix a map you can see.

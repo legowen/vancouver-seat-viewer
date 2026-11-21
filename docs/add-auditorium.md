@@ -36,13 +36,26 @@ real ones as you add them: delete the sample file and remove its id from `theatr
 
 You can also load an existing auditorium in the editor (**Start from**) to adjust it.
 
+### From the command line
+
+If you prefer the terminal, save the rows in a text file and run:
+
+```bash
+npm run import:auditorium -- seats.txt --theatre silvercity-riverport --id riverport-07 --name "Auditorium 7"
+```
+
+Add `--type vip`, `--entrance back-right`, `--source "seat map screenshot 2026-11-20"`,
+`--aisle 1` (narrower aisles), `--no-align` or `--force` (replace an existing file) as needed;
+`--help` lists them all. It checks the rows the same way the editor does, writes the file
+into the right folder and reminds you to list it in `theatre.json`.
+
 ## The compact seat-map format
 
 One row per line, starting with the row nearest the screen. Seats go from left to right
 as they appear on the seat map with the screen at the top.
 
 ```
-A: _ 1-3 | 4-13 | 14-16 _
+A: 1-3 | 4-13 | 14-16
 B: 1-4 | 5-14 | 15-18
 C: 1-4 | 5-14 | 15-18
 L: 1-20
@@ -53,16 +66,28 @@ L: 1-20
 | `A:`   | The row label: 1 to 3 letters or digits, then a colon                 |
 | `5-14` | Seats 5 to 14. Write `14-5` if the numbers go down from left to right |
 | `7`    | A single seat                                                         |
-| `\|`   | An aisle or gap one seat wide. Use `\| \|` for a two-seat gap         |
-| `_`    | A single missing seat, or padding so a short row lines up             |
-| `#`    | Starts a comment line                                                 |
+| `\|`   | An aisle between two blocks of seats. `\| \|` is a double-width aisle |
+| `_`    | A single missing seat                                                 |
+| `#`    | Starts a comment, at the start of a line or after the seats           |
 
-Spaces and commas between seats are both fine. `|` and `_` both become `null` in the JSON
-file and take up one seat's width in the room, which is how aisles get their real width.
+Write one `|` per aisle, however wide it looks on the screenshot: an aisle is two seat
+widths (about 1.1 m for standard seats). In the editor, **Aisle width** changes that for the
+whole map.
 
-Rows of different lengths are centred by default. If the seat map shows them lined up on
-the left or the right instead, change **Shorter rows line up** in the editor (the
-`rowAlign` field), or pad the short rows with `_`.
+Rows with the same number of blocks are lined up so their aisles run straight from front to
+back, the way they do in a real cinema: the left and right blocks hug the aisles and the
+middle blocks are centred. In the example, row A's three-seat side blocks get one empty seat
+on the outside so its aisles match rows B and C. Rows with a different number of blocks
+(row L, which has no aisles) are centred on the screen. Untick **Line the aisles up** in the
+editor (or pass `--no-align`) to turn this off.
+
+Spaces and commas between seats are both fine, and so are the full-width characters that
+Korean and Chinese keyboards type (`：`, `｜`, `＿`, `－`, `１２３`). Gaps become `null` in the
+JSON file, each one seat wide.
+
+Rows of different lengths are centred by default. If the seat map shows short rows lined up
+on the left or the right instead, change **Shorter rows line up** in the editor (the
+`rowAlign` field), or pad them with `_`.
 
 ## Ask Claude to read a screenshot
 
@@ -82,9 +107,9 @@ Rules:
   as they appear on the map with the screen at the top.
 - Write runs of consecutive seat numbers as ranges, like 5-14. If the numbers go down from
   left to right, write the range backwards, like 14-5.
-- Put | for each seat-wide aisle or gap (a gap two seats wide is | |).
-- Use _ for a single missing seat inside a block, and to pad the start of a shorter row so
-  it lines up with the rows behind it when the map shows it that way.
+- Put | between blocks of seats wherever there is an aisle: one | per aisle, however wide
+  it is drawn.
+- Use _ for a single missing seat inside a block of seats.
 - Wheelchair or companion spaces: include them if they have seat numbers, otherwise leave
   them as gaps.
 - Do not skip or merge rows, and do not invent seat numbers you cannot read.
@@ -96,7 +121,8 @@ Reply with the text in a single code block. After it, list anything you were uns
 To get the JSON file directly instead, add this to the prompt (with your own ids):
 
 ```text
-Then also give me the auditorium as JSON in this shape, with null for every | or _:
+Then also give me the auditorium as JSON in this shape, with two nulls for every |
+and one null for every _:
 
 {
   "id": "riverport-07",
@@ -104,7 +130,7 @@ Then also give me the auditorium as JSON in this shape, with null for every | or
   "name": "Auditorium 7",
   "type": "standard",
   "rows": [
-    { "label": "A", "seats": [1, 2, 3, 4, null, 5, 6] }
+    { "label": "A", "seats": [1, 2, 3, 4, null, null, 5, 6] }
   ],
   "entrance": "front-left",
   "verified": false,

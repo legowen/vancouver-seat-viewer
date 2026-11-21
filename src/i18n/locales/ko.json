@@ -110,7 +110,7 @@
   "editor.align.left": "왼쪽",
   "editor.align.right": "오른쪽",
   "editor.seats": "좌석 배치",
-  "editor.seatsHelp": "스크린 쪽부터 뒤쪽까지 한 줄에 한 열씩 입력하세요. 1-4는 1~4번 좌석, |는 통로, _는 빈자리입니다.",
+  "editor.seatsHelp": "스크린 쪽부터 뒤쪽까지 한 줄에 한 열씩 입력하세요. 1-4는 1~4번 좌석, |는 통로, _는 빈자리 하나입니다. 블록 수가 같은 열끼리는 통로가 일직선이 되도록 맞춰 줍니다.",
   "editor.dimensions": "치수",
   "editor.auto": "기본값",
   "editor.dim.screenWidth": "스크린 너비",
@@ -146,5 +146,8 @@
   "seats.nudgeLeft": "왼쪽 좌석",
   "seats.nudgeRight": "오른쪽 좌석",
   "seats.nudgeUp": "스크린 쪽 앞 열",
-  "seats.nudgeDown": "뒤쪽 열"
+  "seats.nudgeDown": "뒤쪽 열",
+  "editor.aisleWidth": "통로 너비",
+  "editor.aisleOption": "좌석 {count}개 너비",
+  "editor.alignAisles": "열마다 통로를 일직선으로 맞추기"
 }

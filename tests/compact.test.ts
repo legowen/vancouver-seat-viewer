@@ -11,26 +11,111 @@ const range = (from: number, to: number) =>
     from <= to ? from + index : from - index,
   );
 
+const AISLE = [null, null];
+
 describe('parseCompact', () => {
-  it('reads the example from the brief', () => {
+  it('reads the example from the brief, with aisles two seats wide', () => {
     const { rows, errors } = parseCompact('A: 1-4 | 5-10 | 11-14\nB: 1-4 | 5-12 | 13-16');
     expect(errors).toEqual([]);
+    // Row A's middle block (6 seats) is centred against row B's (8), so the aisles line up.
     expect(rows).toEqual([
-      { label: 'A', seats: [...range(1, 4), null, ...range(5, 10), null, ...range(11, 14)] },
-      { label: 'B', seats: [...range(1, 4), null, ...range(5, 12), null, ...range(13, 16)] },
+      {
+        label: 'A',
+        seats: [...range(1, 4), ...AISLE, null, ...range(5, 10), null, ...AISLE, ...range(11, 14)],
+      },
+      {
+        label: 'B',
+        seats: [...range(1, 4), ...AISLE, ...range(5, 12), ...AISLE, ...range(13, 16)],
+      },
     ]);
   });
 
-  it('turns "_" into a single missing seat and accepts aisles at the ends of a row', () => {
-    expect(parseCompact('A: _ 1 2 _ 3 |').rows[0]!.seats).toEqual([null, 1, 2, null, 3, null]);
+  it('turns "_" into a single missing seat and ignores a "|" at either end of a row', () => {
+    expect(parseCompact('A: | _ 1 2 _ 3 |').rows[0]!.seats).toEqual([null, 1, 2, null, 3]);
   });
 
   it('does not need spaces around aisles and accepts commas', () => {
-    expect(parseCompact('A: 1-3|4,5').rows[0]!.seats).toEqual([1, 2, 3, null, 4, 5]);
+    expect(parseCompact('A: 1-3|4,5').rows[0]!.seats).toEqual([1, 2, 3, ...AISLE, 4, 5]);
   });
 
   it('counts down for seats numbered right to left', () => {
-    expect(parseCompact('A: 14-11 | 3-1').rows[0]!.seats).toEqual([14, 13, 12, 11, null, 3, 2, 1]);
+    expect(parseCompact('A: 14-11 | 3-1').rows[0]!.seats).toEqual([
+      14,
+      13,
+      12,
+      11,
+      ...AISLE,
+      3,
+      2,
+      1,
+    ]);
+  });
+
+  it('makes aisles as wide as asked, and wider for "| |"', () => {
+    expect(parseCompact('A: 1-2 | 3-4', { aisleWidth: 1 }).rows[0]!.seats).toEqual([
+      1,
+      2,
+      null,
+      3,
+      4,
+    ]);
+    expect(parseCompact('A: 1-2 | 3-4', { aisleWidth: 3 }).rows[0]!.seats).toEqual([
+      1,
+      2,
+      null,
+      null,
+      null,
+      3,
+      4,
+    ]);
+    expect(parseCompact('A: 1-2 | | 3-4').rows[0]!.seats).toEqual([1, 2, ...AISLE, ...AISLE, 3, 4]);
+  });
+
+  it('lines the aisles up: outer blocks hug the aisle, middle blocks are centred', () => {
+    const { rows } = parseCompact('A: 1-3 | 4-13 | 14-16\nB: 1-4 | 5-14 | 15-18');
+    expect(rows[0]!.seats).toEqual([
+      null,
+      ...range(1, 3),
+      ...AISLE,
+      ...range(4, 13),
+      ...AISLE,
+      ...range(14, 16),
+      null,
+    ]);
+    expect(rows[0]!.seats).toHaveLength(rows[1]!.seats.length);
+  });
+
+  it('leaves rows with a different number of blocks alone', () => {
+    const { rows } = parseCompact('A: 1-4 | 5-14 | 15-18\nB: 1-4 | 5-14 | 15-18\nL: 1-20');
+    expect(rows[2]!.seats).toEqual(range(1, 20));
+  });
+
+  it('can skip lining the aisles up', () => {
+    const { rows } = parseCompact('A: 1-3 | 4-13 | 14-16\nB: 1-4 | 5-14 | 15-18', {
+      align: false,
+    });
+    expect(rows[0]!.seats).toEqual([
+      ...range(1, 3),
+      ...AISLE,
+      ...range(4, 13),
+      ...AISLE,
+      14,
+      15,
+      16,
+    ]);
+  });
+
+  it('reads full-width characters typed on Korean and Chinese keyboards', () => {
+    const { rows, errors } = parseCompact('Ａ：１－４｜５－８\nＢ：１，２，＿，３');
+    expect(errors).toEqual([]);
+    expect(rows).toEqual([
+      { label: 'A', seats: [...range(1, 4), ...AISLE, ...range(5, 8)] },
+      { label: 'B', seats: [1, 2, null, 3] },
+    ]);
+  });
+
+  it('ignores comments at the end of a line', () => {
+    expect(parseCompact('A: 1-4 # front row').rows).toEqual([{ label: 'A', seats: range(1, 4) }]);
   });
 
   it('ignores blank lines, comments and extra spaces', () => {
@@ -87,13 +172,13 @@ describe('parseCompact', () => {
 });
 
 describe('formatCompact', () => {
-  it('writes ranges, aisles and edge gaps', () => {
+  it('writes ranges, and every gap as "_" so nothing is padded or widened on the way back', () => {
     expect(
       formatCompact([
-        { label: 'A', seats: [null, 1, 2, 3, null, 4, null, 9, 8, 7] },
+        { label: 'A', seats: [null, 1, 2, 3, null, null, 4, null, 9, 8, 7] },
         { label: 'B', seats: [5] },
       ]),
-    ).toBe('A: _ 1-3 | 4 | 9-7\nB: 5');
+    ).toBe('A: _ 1-3 _ _ 4 _ 9-7\nB: 5');
   });
 
   it('round-trips every auditorium in data/', () => {
