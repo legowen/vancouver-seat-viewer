@@ -19,6 +19,10 @@ Choices made where the brief left room, one line each: the decision, then why.
 - An auditorium's `id` must equal its file name and its `theatreId` must equal its folder — it keeps links stable and catches copy-paste mistakes.
 - `data/movies.json` entries are `{ id, title, youtubeId, channel, verifiedOn }` — the brief shows two shapes and the detailed one is the one the verification script needs.
 - Added optional auditorium fields `rowAlign` (`center` by default), `placeholder` and `names`, and theatre fields `names` and `areaNames` — real rows are not always centred, sample layouts need a translatable label, and the brief asks for optional per-locale display names.
+- Brentwood's four rooms are named by format ("3D Full Recliner", "Full Recliner A–C") — the booking site shows no hall numbers, so rename them when the numbers are known.
+- Maps without seat numbers are numbered 1, 2, 3 … from the left of each row, wheelchair spaces are gaps and companion seats are seats — the numbers cannot match a ticket, and the notes say so.
+- A pair of VIP recliners takes two slots with no gap slot between pairs — it is the grid the booking site draws, and an aisle slot would stretch each pair apart by a whole seat.
+- The data test now only requires that some placeholder auditoriums exist — samples are replaced theatre by theatre, so a fixed count of seven would fail on the first real map.
 - Place names (`areaNames`) are filled in for Korean and Chinese; theatre names are left in English — areas have well-known local spellings, theatre names are proper nouns.
 
 ## Languages

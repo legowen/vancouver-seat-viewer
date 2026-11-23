@@ -11,8 +11,10 @@ data/
   theatres/<theatre-id>/auditoriums/<id>.json     one file per auditorium
 ```
 
-Each theatre ships with one made-up **sample auditorium** (`*-sample.json`). Replace it with
-real ones as you add them: delete the sample file and remove its id from `theatre.json`.
+Theatres that have no real seat map yet ship with one made-up **sample auditorium**
+(`*-sample.json`). Replace it with real ones as you add them: delete the sample file and
+remove its id from `theatre.json`. Cineplex VIP Brentwood is already done and is a good
+example of a VIP theatre.
 
 ## The quick way
 
@@ -64,6 +66,19 @@ Rows of different lengths are centred by default. If the seat map shows them lin
 the left or the right instead, change **Shorter rows line up** in the editor (the
 `rowAlign` field), or pad the short rows with `_`.
 
+### When the map does not show seat numbers
+
+Some booking maps (the Cineplex VIP ones, for example) show only row letters. Number the
+seats 1, 2, 3 … from the left of each row and say so in `notes`: they will not match the
+numbers on a ticket. Wheelchair spaces have no seat, so write them as gaps; the companion
+seat next to one is a real seat. A pair of recliners drawn touching is two seats side by
+side, with no gap slot between one pair and the next, because the map's grid already puts
+every pair two slots wide.
+
+To put rows at the right place when they do not line up in the middle (a row that is
+shifted, or a seat that is not drawn), pad them with `_`, set `rowAlign` to `left`, and
+write every row on the same slot grid. Check the 2D preview against the screenshot.
+
 ## Ask Claude to read a screenshot
 
 Attach the seat-map screenshot and paste this prompt:
@@ -87,6 +102,9 @@ Rules:
   it lines up with the rows behind it when the map shows it that way.
 - Wheelchair or companion spaces: include them if they have seat numbers, otherwise leave
   them as gaps.
+- If the map shows no seat numbers, number the seats 1, 2, 3 … from the left of each row.
+  Draw the map on one slot grid (a pair of recliners drawn touching is two slots) and pad
+  rows with _ so they line up as they do on the map.
 - Do not skip or merge rows, and do not invent seat numbers you cannot read.
 
 Reply with the text in a single code block. After it, list anything you were unsure about

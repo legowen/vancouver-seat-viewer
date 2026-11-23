@@ -72,7 +72,8 @@ the repository.
 ## Add an auditorium
 
 Each auditorium is a JSON file under `data/theatres/<theatre-id>/auditoriums/`. Every
-theatre currently has one made-up sample auditorium to replace with real ones.
+theatre except Cineplex VIP Brentwood (four real rooms read from booking-site screenshots)
+still has one made-up sample auditorium to replace with real ones.
 
 The short version: type the rows in the compact format (`A: 1-4 | 5-10 | 11-14`), paste
 them into the editor at `#/editor`, check the previews, and download the file. The full

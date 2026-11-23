@@ -6,6 +6,11 @@
     "ko": "버나비 (브렌트우드)",
     "zh-Hans": "本拿比（Brentwood）"
   },
-  "auditoriums": ["brentwood-vip-sample"],
+  "auditoriums": [
+    "brentwood-3d-recliner",
+    "brentwood-recliner-a",
+    "brentwood-recliner-b",
+    "brentwood-recliner-c"
+  ],
   "notes": "Name and area are best-effort. Correct them here if they are wrong."
 }
