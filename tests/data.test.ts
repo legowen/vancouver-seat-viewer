@@ -91,6 +91,28 @@ describe('data/ directory', () => {
     expect(typeOf('cineplex-coquitlam')).toBe('standard');
   });
 
+  it('has four real VIP auditoriums for Brentwood, read from booking-site screenshots', () => {
+    const brentwood = data.theatres.find((entry) => entry.theatre.id === 'cineplex-vip-brentwood');
+    const rooms = brentwood?.auditoriums ?? [];
+    expect(rooms.map((room) => room.id)).toEqual([
+      'brentwood-3d-recliner',
+      'brentwood-recliner-a',
+      'brentwood-recliner-b',
+      'brentwood-recliner-c',
+    ]);
+    for (const room of rooms) {
+      expect(room.type).toBe('vip');
+      expect(room.placeholder).toBeUndefined();
+      expect(room.verified ?? false).toBe(false);
+    }
+    expect(rooms.map((room) => room.rows.map((row) => row.label).join(' '))).toEqual([
+      'AA A B C D E F G',
+      'AA A B C D E F G',
+      'AA A B C D E F G',
+      'A B C D E F',
+    ]);
+  });
+
   it('gives standard sample auditoriums 10 to 16 rows', () => {
     const rowCounts = data.theatres
       .flatMap((entry) => entry.auditoriums)
@@ -104,7 +126,8 @@ describe('data/ directory', () => {
     const placeholders = data.theatres
       .flatMap((entry) => entry.auditoriums)
       .filter((auditorium) => auditorium.placeholder);
-    expect(placeholders.length).toBeGreaterThanOrEqual(7);
+    // Samples are replaced by real seat maps over time, so this only needs some to check.
+    expect(placeholders.length).toBeGreaterThan(0);
     for (const auditorium of placeholders) {
       expect(auditorium.name).toMatch(/^Sample auditorium/);
       expect(auditorium.verified ?? false).toBe(false);

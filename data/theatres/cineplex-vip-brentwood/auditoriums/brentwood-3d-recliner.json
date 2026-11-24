@@ -1,0 +1,23 @@
+{
+  "id": "brentwood-3d-recliner",
+  "theatreId": "cineplex-vip-brentwood",
+  "name": "3D Full Recliner",
+  "names": {
+    "ko": "3D 풀 리클라이너"
+  },
+  "type": "vip",
+  "rowAlign": "left",
+  "rows": [
+    { "label": "AA", "seats": [null, null, null, null, 1, 2, 3, 4, 5, 6] },
+    { "label": "A", "seats": [null, 1, null, 2, 3, 4, 5, null, null, null, 6] },
+    { "label": "B", "seats": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "C", "seats": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
+    { "label": "D", "seats": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "E", "seats": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+    { "label": "F", "seats": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] },
+    { "label": "G", "seats": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] }
+  ],
+  "verified": false,
+  "source": "Cineplex booking-site seat map screenshot, Mon Nov 23 2026, 6:15 PM showing (VIP 19+, 3D, Full Recliner)",
+  "notes": "The booking site does not show the hall number, so this room is named by its format. Seat numbers are not shown on the map: they count from the left of each row and may not match the numbers on a ticket. Row A has wheelchair spaces (left as gaps) with a companion seat next to each. AA is a front row of three pairs; the map leaves a one-row aisle between AA and A, which the 3D room does not show. Entrance is not known, so the default is used. Dimensions are estimates. The layout is a mirror image of Full Recliner A and B (the extra pair in rows E and F is on the right). One outer seat in row C is not drawn on this map."
+}
