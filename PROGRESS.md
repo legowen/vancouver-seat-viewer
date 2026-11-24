@@ -14,10 +14,12 @@ again if a session is interrupted.
 - [x] **M7** Polish, README, GitHub Pages deploy workflow, push to `main`
 
 An earlier, separate build of the same brief (from another session) is kept on the
-`claude/zealous-rubin-3tujo9` branch; this build replaced it on `main` on 2026-11-19.
+`claude/zealous-rubin-3tujo9` branch; this build replaced it on `main` on 2026-11-19, and its
+best ideas were ported over on 2026-11-20 (see "Ported from the earlier build" in DECISIONS.md).
 
 ## Picking the work back up
 
 - `npm install`, then `npm run dev` and open the URL it prints.
-- Checks that must pass before each commit: `npm run lint && npm test && npm run build`.
+- Checks that must pass before each commit: `npm run lint && npm test && npm run build`, and
+  `npm run smoke` when Playwright is installed.
 - Choices made along the way are in [DECISIONS.md](DECISIONS.md).

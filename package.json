@@ -16,7 +16,9 @@
     "test:watch": "vitest",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "verify:trailers": "tsx scripts/verify-trailers.ts"
+    "verify:trailers": "tsx scripts/verify-trailers.ts",
+    "import:auditorium": "tsx scripts/import-auditorium.ts",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "three": "^0.187.0",

@@ -40,14 +40,25 @@ export interface SeatMapOptions {
   layout: AuditoriumLayout;
   rated: ReadonlyMap<string, RatedSeat>;
   selected: string;
-  onSelect(key: string): void;
+  /**
+   * `keyboard`: arrow keys moved focus to the seat, whose own label is read out.
+   * `pointer` and `program` (the nudge buttons): nothing was focused, so announce it.
+   */
+  onSelect(key: string, source: SelectSource): void;
   /** Enter on the selected seat: sit down. */
   onActivate(key: string): void;
+  /** Id of an element that describes the selected seat (the card's verdict). */
+  describedBy?: string;
 }
+
+export type SelectSource = 'keyboard' | 'pointer' | 'program';
 
 export interface SeatMap {
   el: HTMLElement;
-  select(key: string, options?: { focus?: boolean }): void;
+  readonly selected: string;
+  select(key: string, options?: { focus?: boolean; source?: SelectSource }): void;
+  /** Moves the selection like the arrow keys do, without moving focus. */
+  move(direction: SeatMove): void;
   relocalize(): void;
 }
 
@@ -121,6 +132,7 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
         'data-key': seat.key,
         'data-band': rated.get(seat.key)?.rating.band,
         'aria-pressed': 'false',
+        'aria-describedby': options.describedBy,
         style: place(geometry.centerX(seat) - SEAT / 2, y - SEAT / 2, SEAT, SEAT),
       });
       buttons.set(seat.key, button);
@@ -130,7 +142,10 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
 
   let selected = buttons.has(options.selected) ? options.selected : (layout.seats[0]?.key ?? '');
 
-  const select = (key: string, selectOptions: { focus?: boolean } = {}): void => {
+  const select = (
+    key: string,
+    selectOptions: { focus?: boolean; source?: SelectSource } = {},
+  ): void => {
     const next = buttons.get(key);
     if (!next) return;
     const previous = buttons.get(selected);
@@ -140,18 +155,21 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
     }
     next.setAttribute('aria-pressed', 'true');
     next.tabIndex = 0;
-    if (selectOptions.focus) next.focus();
     if (key !== selected) {
       selected = key;
-      options.onSelect(key);
+      // Update the card first, so its verdict (this seat's description) is current when the
+      // seat takes focus and a screen reader reads it.
+      options.onSelect(key, selectOptions.source ?? 'program');
     }
+    if (selectOptions.focus) next.focus();
+    else next.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   };
 
   field.addEventListener('click', (event) => {
     const target =
       event.target instanceof Element ? event.target.closest<HTMLElement>('.seat') : null;
     if (target?.dataset.key) {
-      select(target.dataset.key);
+      select(target.dataset.key, { source: 'pointer' });
       return;
     }
     // A tap that misses every seat picks the nearest one, so small seats stay easy to hit.
@@ -170,7 +188,7 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
         nearest = seat;
       }
     }
-    if (nearest) select(nearest.key, { focus: true });
+    if (nearest) select(nearest.key, { focus: true, source: 'pointer' });
   });
 
   field.addEventListener('keydown', (event) => {
@@ -180,11 +198,11 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
     const move = KEY_MOVES[event.key];
     if (move) {
       event.preventDefault();
-      select(moveSelection(layout, key, move), { focus: true });
+      select(moveSelection(layout, key, move), { focus: true, source: 'keyboard' });
     } else if (event.key === 'Enter') {
       event.preventDefault();
       if (key === selected) options.onActivate(key);
-      else select(key);
+      else select(key, { source: 'keyboard' });
     }
   });
 
@@ -209,7 +227,15 @@ export function createSeatMap(options: SeatMapOptions): SeatMap {
     initial.tabIndex = 0;
   }
 
-  return { el: h('div', { class: 'seat-map-wrap' }, hint, field), select, relocalize };
+  return {
+    el: h('div', { class: 'seat-map-wrap' }, hint, field),
+    get selected() {
+      return selected;
+    },
+    select,
+    move: (direction) => select(moveSelection(layout, selected, direction)),
+    relocalize,
+  };
 }
 
 /** A small, non-interactive picture of the seat map, coloured by rating band. */

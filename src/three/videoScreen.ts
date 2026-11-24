@@ -10,9 +10,9 @@ import type { VideoRect } from './auditoriumModel';
  */
 export type VideoState = 'idle' | 'loading' | 'muted' | 'playing' | 'failed';
 
-/** The iframe is laid out at this CSS size and scaled down onto the screen. */
-const PIXEL_WIDTH = 1280;
-const PIXEL_HEIGHT = 720;
+/** The screen is laid out this many CSS pixels wide and scaled down onto the 3D screen. */
+const HOST_WIDTH = 1280;
+const VIDEO_ASPECT = 16 / 9;
 const READY_TIMEOUT_MS = 15_000;
 
 /** Whether the browser can place an element in 3D space at all. */
@@ -38,13 +38,17 @@ export class VideoScreen {
   private readonly scene = new Scene();
   private object: CSS3DObject | null = null;
   private iframe: HTMLIFrameElement | null = null;
+  private fill = false;
   private player: YouTubePlayer | null = null;
   private timeout = 0;
   private current: VideoState = 'idle';
 
   constructor(
     stage: HTMLElement,
-    private readonly rect: VideoRect,
+    /** The whole screen. The player sits in a box this shape, clipped to it. */
+    private readonly screenRect: VideoRect,
+    /** The 16:9 area a trailer covers when shown whole. */
+    private readonly videoRect: VideoRect,
     private readonly videoId: string,
     private readonly title: string,
     private readonly onState: (state: VideoState) => void,
@@ -67,19 +71,25 @@ export class VideoScreen {
     const iframe = document.createElement('iframe');
     iframe.src = embedUrl(this.videoId, window.location.origin);
     iframe.title = this.title;
-    iframe.width = String(PIXEL_WIDTH);
-    iframe.height = String(PIXEL_HEIGHT);
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     // YouTube refuses to play embeds that send no referrer.
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
     iframe.className = 'view__video';
 
-    const object = new CSS3DObject(iframe);
-    object.position.copy(this.rect.center);
-    object.scale.setScalar(this.rect.width / PIXEL_WIDTH);
+    // A box the shape of the whole screen, clipping the player when it is cropped to fill it.
+    const host = document.createElement('div');
+    host.className = 'view__video-host';
+    host.style.width = `${HOST_WIDTH}px`;
+    host.style.height = `${this.hostHeight()}px`;
+    host.append(iframe);
+
+    const object = new CSS3DObject(host);
+    object.position.copy(this.screenRect.center);
+    object.scale.setScalar(this.screenRect.width / HOST_WIDTH);
     this.scene.add(object);
     this.object = object;
     this.iframe = iframe;
+    this.sizePlayer();
     this.setState('loading');
 
     iframe.addEventListener(
@@ -125,6 +135,17 @@ export class VideoScreen {
     if (this.current === 'muted') this.setState('playing');
   }
 
+  /** Shows the 16:9 player whole (false) or cropped to cover the whole screen (true). */
+  setFill(fill: boolean): void {
+    this.fill = fill;
+    this.sizePlayer();
+  }
+
+  /** Gives up on the player by hand ("Video not showing?"): the still frame comes back. */
+  giveUp(): void {
+    if (this.current !== 'failed') this.fail();
+  }
+
   setSize(width: number, height: number): void {
     this.renderer.setSize(width, height);
   }
@@ -137,6 +158,19 @@ export class VideoScreen {
   dispose(): void {
     this.unmount();
     this.renderer.domElement.remove();
+  }
+
+  private hostHeight(): number {
+    return Math.round((HOST_WIDTH * this.screenRect.height) / this.screenRect.width);
+  }
+
+  private sizePlayer(): void {
+    if (!this.iframe) return;
+    const width = this.fill
+      ? Math.max(HOST_WIDTH, this.hostHeight() * VIDEO_ASPECT)
+      : (HOST_WIDTH * this.videoRect.width) / this.screenRect.width;
+    this.iframe.style.width = `${width}px`;
+    this.iframe.style.height = `${width / VIDEO_ASPECT}px`;
   }
 
   private fail(): void {

@@ -32,7 +32,12 @@ export interface SeatViewerOptions {
   reducedMotion?: boolean;
   onModeChange?(mode: ViewerMode): void;
   onVideoStateChange?(state: VideoState): void;
+  /** The browser took the WebGL context away and did not give it back. */
+  onContextLost?(): void;
 }
+
+/** Phones drop the WebGL context under memory pressure and usually return it quickly. */
+const CONTEXT_RESTORE_MS = 6000;
 
 /**
  * Renders an auditorium from one seat. After an optional walk-in, the camera sits at the
@@ -56,6 +61,8 @@ export class SeatViewer {
   private video: VideoScreen | null = null;
   private videoStatus: VideoState = 'idle';
   private mountTimer = 0;
+  private fill = false;
+  private contextTimer = 0;
   /** Look offsets from straight at the screen centre, in degrees. Positive = right / up. */
   private yaw = 0;
   private pitch = 0;
@@ -87,6 +94,7 @@ export class SeatViewer {
       } else {
         this.video = new VideoScreen(
           stage,
+          this.model.screenRect,
           this.model.videoRect,
           options.videoId,
           options.videoTitle ?? 'YouTube',
@@ -133,6 +141,19 @@ export class SeatViewer {
     this.video?.unmute();
   }
 
+  /** Crops the trailer (or its still frame) to cover the whole screen, or shows it whole. */
+  setVideoFill(fill: boolean): void {
+    this.fill = fill;
+    this.model.setPictureFill(fill);
+    this.video?.setFill(fill);
+    this.invalidate();
+  }
+
+  /** "Video not showing?": drops the player and goes back to the still frame. */
+  giveUpVideo(): void {
+    this.video?.giveUp();
+  }
+
   /** Plays the walk from the door to the seat again. */
   replayWalk(): void {
     if (this.options.reducedMotion) return;
@@ -173,6 +194,7 @@ export class SeatViewer {
     this.model.dispose();
     this.layout = layout;
     this.model = buildAuditoriumModel(layout, seat);
+    this.model.setPictureFill(this.fill);
     this.scene.add(this.model.group);
     this.setSeat(seat);
   }
@@ -197,6 +219,7 @@ export class SeatViewer {
     this.resizeObserver.disconnect();
     this.endWalk();
     window.clearTimeout(this.mountTimer);
+    window.clearTimeout(this.contextTimer);
     this.video?.dispose();
     this.model.dispose();
     this.renderer.dispose();
@@ -238,7 +261,7 @@ export class SeatViewer {
     this.pitch = 0;
     this.recentring = null;
     this.walk = new WalkIn(this.layout, this.seat, () => this.seatedPose());
-    this.scene.add(this.walk.avatar.group);
+    this.scene.add(this.walk.group);
     this.model.highlightSeat(this.seat);
     this.lastFrame = 0;
     this.setMode('walking');
@@ -402,7 +425,27 @@ export class SeatViewer {
     );
 
     const canvas = this.renderer.domElement;
-    canvas.addEventListener('webglcontextlost', (event) => event.preventDefault(), { signal });
-    canvas.addEventListener('webglcontextrestored', () => this.invalidate(), { signal });
+    // preventDefault asks the browser to give the context back; three.js re-uploads
+    // everything when it does. If it never does, the screen says so.
+    canvas.addEventListener(
+      'webglcontextlost',
+      (event) => {
+        event.preventDefault();
+        window.clearTimeout(this.contextTimer);
+        this.contextTimer = window.setTimeout(
+          () => this.options.onContextLost?.(),
+          CONTEXT_RESTORE_MS,
+        );
+      },
+      { signal },
+    );
+    canvas.addEventListener(
+      'webglcontextrestored',
+      () => {
+        window.clearTimeout(this.contextTimer);
+        this.invalidate();
+      },
+      { signal },
+    );
   }
 }

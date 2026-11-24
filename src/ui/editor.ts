@@ -54,6 +54,10 @@ interface EditorState {
   entrance: Entrance;
   rowAlign: RowAlignment;
   text: string;
+  /** Seat widths per "|" aisle. Shapes the rows, so it is not stored in the file. */
+  aisleWidth: number;
+  /** Pad blocks so aisles line up from row to row. */
+  alignAisles: boolean;
   /** null = use the default for this type and size. */
   dims: Record<DimKey, number | null>;
   verified: boolean;
@@ -62,7 +66,7 @@ interface EditorState {
 }
 
 const EXAMPLE_ROWS = [
-  'A: _ 1-3 | 4-13 | 14-16 _',
+  'A: 1-3 | 4-13 | 14-16',
   ...['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'].map((row) => `${row}: 1-4 | 5-14 | 15-18`),
   'L: 1-20',
 ].join('\n');
@@ -90,6 +94,9 @@ function stateFromAuditorium(auditorium: Auditorium): EditorState {
     entrance: auditorium.entrance ?? 'front-left',
     rowAlign: auditorium.rowAlign ?? 'center',
     text: formatCompact(auditorium.rows),
+    // The text written back uses "_" for every gap, so these options cannot change it.
+    aisleWidth: 2,
+    alignAisles: true,
     dims: {
       screenWidth: auditorium.screen?.width_m ?? null,
       screenAspect: auditorium.screen?.aspect ?? null,
@@ -157,6 +164,8 @@ export function editorScreen(context: AppContext): Screen {
     entrance: 'front-left',
     rowAlign: 'center',
     text: EXAMPLE_ROWS,
+    aisleWidth: 2,
+    alignAisles: true,
     dims: emptyDims(),
     verified: false,
     source: '',
@@ -286,6 +295,24 @@ export function editorScreen(context: AppContext): Screen {
     update(true);
   });
   const problems = h('ul', { class: 'editor__problems', role: 'alert' });
+  const aisleSelect = select(
+    'aisle',
+    ['1', '2', '3'].map((value) => ({
+      value,
+      label: t('editor.aisleOption', { count: value }),
+    })),
+    String(state.aisleWidth),
+    (value) => {
+      state.aisleWidth = Number(value);
+      update(true);
+    },
+  );
+  const alignBox = h('input', { type: 'checkbox', id: fieldId('align-aisles') });
+  alignBox.checked = state.alignAisles;
+  alignBox.addEventListener('change', () => {
+    state.alignAisles = alignBox.checked;
+    update(true);
+  });
 
   // ---------- Dimension sliders ----------
   const sliders = DIMS.map((spec) => {
@@ -349,6 +376,8 @@ export function editorScreen(context: AppContext): Screen {
     entranceSelect.value = state.entrance;
     alignSelect.value = state.rowAlign;
     seatText.value = state.text;
+    aisleSelect.value = String(state.aisleWidth);
+    alignBox.checked = state.alignAisles;
     verifiedBox.checked = state.verified;
     sourceInput.value = state.source;
     notesInput.value = state.notes;
@@ -413,7 +442,10 @@ export function editorScreen(context: AppContext): Screen {
   };
 
   const render = (rebuild3d: boolean): void => {
-    const parsed = parseCompact(state.text);
+    const parsed = parseCompact(state.text, {
+      aisleWidth: state.aisleWidth,
+      align: state.alignAisles,
+    });
     const candidate = buildAuditorium(state, parsed.rows);
     const validation = AuditoriumSchema.safeParse(candidate);
     const messages = [
@@ -556,6 +588,17 @@ export function editorScreen(context: AppContext): Screen {
           seatText,
           h('p', { class: 'field__hint', id: fieldId('seats-help') }, t('editor.seatsHelp')),
           problems,
+        ),
+        h(
+          'div',
+          { class: 'field-grid field-grid--aisles' },
+          field('aisle', 'editor.aisleWidth', aisleSelect),
+          h(
+            'label',
+            { class: 'checkbox', for: fieldId('align-aisles') },
+            alignBox,
+            h('span', null, t('editor.alignAisles')),
+          ),
         ),
         h(
           'fieldset',

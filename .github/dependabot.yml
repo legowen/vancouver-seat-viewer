@@ -1,0 +1,27 @@
+version: 2
+
+# Weekly update PRs for npm packages and the GitHub Actions the workflows use.
+# CI runs on every PR, so a bad bump shows up before it can reach main and the live site.
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # three.js and its type definitions must move together.
+      three:
+        patterns:
+          - three
+          - '@types/three'
+      # Lint, test and build tooling: none of it ships to the browser.
+      dev-tools:
+        dependency-type: development
+        exclude-patterns:
+          - '@types/three'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

@@ -118,6 +118,12 @@ code {
   font-size: 0.9em;
 }
 
+/* Components set their own display (.button is inline-flex), which would otherwise beat the
+   browser's own rule and keep [hidden] elements on screen. */
+[hidden] {
+  display: none !important;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -642,10 +648,6 @@ code {
   background: rgb(36 36 48 / 0.85);
 }
 
-.chip[hidden] {
-  display: none;
-}
-
 /* ---------- Seat card (bottom of the 3D view) ---------- */
 
 .seat-card {
@@ -898,11 +900,6 @@ code {
 
 .seat-card__stats--minor {
   font-size: 0.8125rem;
-}
-
-.seat-card__take {
-  margin-top: 8px;
-  font-size: 1.0625rem;
 }
 
 /* On phones the card sticks to the bottom so "Take this seat" is always in reach. */
@@ -1331,4 +1328,208 @@ code {
   .seat-card__map {
     display: none;
   }
+}
+
+/* ---------- Band shapes: colour is not the only cue ---------- */
+
+/* A dot on prime seats and a slash through seats to avoid, on the map and in the legend. */
+.seat[data-band='prime']::after,
+.seat[data-band='avoid']::after,
+.legend__item[data-band='prime'] .legend__swatch::after,
+.legend__item[data-band='avoid'] .legend__swatch::after {
+  content: '';
+  position: absolute;
+  background: rgb(18 18 23 / 0.62);
+}
+
+.seat[data-band='prime']::after,
+.legend__item[data-band='prime'] .legend__swatch::after {
+  top: 36%;
+  left: 36%;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+}
+
+.seat[data-band='avoid']::after,
+.legend__item[data-band='avoid'] .legend__swatch::after {
+  top: 44%;
+  right: 16%;
+  left: 16%;
+  height: 12%;
+  border-radius: 1px;
+  rotate: -45deg;
+}
+
+.legend__swatch {
+  position: relative;
+}
+
+/* ---------- Nudge buttons on the seat card ---------- */
+
+.seat-card__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.nudges {
+  display: flex;
+  gap: 6px;
+}
+
+.nudge {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.nudge:hover {
+  border-color: var(--accent);
+}
+
+.nudge__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.seat-card__take {
+  flex: 1 1 150px;
+  min-width: 0;
+  font-size: 1.0625rem;
+}
+
+/* ---------- Windows high-contrast (forced colours) ---------- */
+
+@media (forced-colors: active) {
+  .seat,
+  .legend__swatch {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+
+  .seat[data-band='prime']::after,
+  .seat[data-band='avoid']::after,
+  .legend__item[data-band='prime'] .legend__swatch::after,
+  .legend__item[data-band='avoid'] .legend__swatch::after {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  /* Box shadows are dropped in this mode, so the selection becomes a filled seat. */
+  .seat[aria-pressed='true'] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .seat:focus-visible {
+    outline: 2px solid Highlight;
+  }
+
+  .seat-map__screen-bar {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .band-pill {
+    border: 1px solid CanvasText;
+  }
+}
+
+.field-grid--aisles {
+  align-items: end;
+}
+
+/* ---------- Seated view: fill toggle, fallback note, folding card ---------- */
+
+.view__video-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.view__video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.view__overlay {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.view__note {
+  max-width: 340px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgb(16 16 22 / 0.8);
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.seat-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.seat-card {
+  position: relative;
+}
+
+.seat-card__fold {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.seat-card--folded .seat-card__fold svg {
+  transform: rotate(180deg);
+}
+
+/* Leave room for the fold button next to the mini map. */
+.seat-card__summary {
+  padding-right: 44px;
+}
+
+.seat-card--folded .seat-card__verdict,
+.seat-card--folded .seat-card__stats,
+.seat-card--folded .seat-card__links,
+.seat-card--folded .seat-card__map {
+  display: none;
 }
