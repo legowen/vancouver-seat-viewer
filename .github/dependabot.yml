@@ -8,6 +8,12 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # typescript-eslint 8 only supports TypeScript below 6.1 (see DECISIONS.md), so a major
+      # bump makes `npm ci` fail. Remove this once typescript-eslint supports TypeScript 7.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     groups:
       # three.js and its type definitions must move together.
       three:
