@@ -88,7 +88,33 @@ describe('data/ directory', () => {
       data.theatres.find((entry) => entry.theatre.id === theatreId)?.auditoriums[0]?.type;
     expect(typeOf('cineplex-vip-brentwood')).toBe('vip');
     expect(typeOf('cineplex-marine-gateway')).toBe('vip');
-    expect(typeOf('cineplex-coquitlam')).toBe('standard');
+    // Coquitlam's VIP halls are real; its sample stands in for the standard halls.
+    const coquitlam = data.theatres.find((entry) => entry.theatre.id === 'cineplex-coquitlam');
+    expect(coquitlam?.auditoriums.find((room) => room.id === 'coquitlam-sample')?.type).toBe(
+      'standard',
+    );
+  });
+
+  it('has three real VIP auditoriums for Coquitlam, listed before the standard stand-in', () => {
+    const coquitlam = data.theatres.find((entry) => entry.theatre.id === 'cineplex-coquitlam');
+    const rooms = coquitlam?.auditoriums ?? [];
+    expect(rooms.map((room) => room.id)).toEqual([
+      'coquitlam-vip-a',
+      'coquitlam-vip-b',
+      'coquitlam-vip-c',
+      'coquitlam-sample',
+    ]);
+    for (const room of rooms.slice(0, 3)) {
+      expect(room.type).toBe('vip');
+      expect(room.placeholder).toBeUndefined();
+      expect(room.verified ?? false).toBe(false);
+    }
+    expect(rooms[3]?.placeholder).toBe(true);
+    expect(rooms.slice(0, 3).map((room) => room.rows.map((row) => row.label).join(' '))).toEqual([
+      'AA A B C D E F G',
+      'AA A B C D E F G',
+      'AA A B C D E F G H',
+    ]);
   });
 
   it('has four real VIP auditoriums for Brentwood, read from booking-site screenshots', () => {
