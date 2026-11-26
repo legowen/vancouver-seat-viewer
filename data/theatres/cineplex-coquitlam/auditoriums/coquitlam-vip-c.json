@@ -1,0 +1,21 @@
+{
+  "id": "coquitlam-vip-c",
+  "theatreId": "cineplex-coquitlam",
+  "name": "VIP C",
+  "type": "vip",
+  "rowAlign": "left",
+  "rows": [
+    { "label": "AA", "seats": [null, null, null, null, null, 1, 2, null, null, null, null, 3, 4] },
+    { "label": "A", "seats": [null, null, null, null, 1, null, null, null, 2, null, 3, null, 4] },
+    { "label": "B", "seats": [null, null, null, null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "C", "seats": [null, null, null, null, 1, 2, 3, 4, 5, null, 6, 7, 8, 9] },
+    { "label": "D", "seats": [null, null, null, null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "E", "seats": [null, null, null, null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "F", "seats": [null, null, null, null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+    { "label": "G", "seats": [1, 2, null, null, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, null, null, 13, 14] },
+    { "label": "H", "seats": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] }
+  ],
+  "verified": false,
+  "source": "Cineplex booking-site seat map screenshot, Wed Nov 25 2026, 8:00 PM showing (VIP 19+)",
+  "notes": "The booking site does not show the hall number, so this room is named by the order of the screenshots. Seat numbers are not shown on the map: they count from the left of each row and may not match the numbers on a ticket. Row A has wheelchair spaces (left as gaps) with a companion seat next to the first one. AA is a front row; the map leaves a one-row aisle between AA and A, which the 3D room does not show. Seats the map does not draw are left as gaps: they may be blocked for this showing rather than missing from the room. Entrance is not known, so the default is used. Dimensions are estimates. The largest of the three, with an extra row H. Only a few seats are not drawn (rows A, C and G)."
+}

@@ -19,6 +19,9 @@ Choices made where the brief left room, one line each: the decision, then why.
 - An auditorium's `id` must equal its file name and its `theatreId` must equal its folder — it keeps links stable and catches copy-paste mistakes.
 - `data/movies.json` entries are `{ id, title, youtubeId, channel, verifiedOn }` — the brief shows two shapes and the detailed one is the one the verification script needs.
 - Added optional auditorium fields `rowAlign` (`center` by default), `placeholder` and `names`, and theatre fields `names` and `areaNames` — real rows are not always centred, sample layouts need a translatable label, and the brief asks for optional per-locale display names.
+- Coquitlam's three VIP halls are named "VIP A–C" in screenshot order and the standard-hall sample stays listed after them — only the VIP halls were given, and the sample keeps the theatre usable for the rest until they are.
+- Rows are padded with "_" so the middle of the widest row sits under the middle of the map's SCREEN label — at Coquitlam the A–F block is drawn right of the screen centre, and the padding keeps that offset instead of centring every row.
+- Seats the map does not draw (a missing pair in row E, say) are left as gaps, not filled in — the file cannot tell a removed seat from one blocked for that showing, and the notes say so.
 - Brentwood's four rooms are named by format ("3D Full Recliner", "Full Recliner A–C") — the booking site shows no hall numbers, so rename them when the numbers are known.
 - Maps without seat numbers are numbered 1, 2, 3 … from the left of each row, wheelchair spaces are gaps and companion seats are seats — the numbers cannot match a ticket, and the notes say so.
 - A pair of VIP recliners takes two slots with no gap slot between pairs — it is the grid the booking site draws, and an aisle slot would stretch each pair apart by a whole seat.

@@ -1,11 +1,11 @@
 {
   "id": "cineplex-coquitlam",
-  "name": "Cineplex Cinemas Coquitlam",
+  "name": "Cineplex Cinemas Coquitlam and VIP",
   "area": "Coquitlam",
   "areaNames": {
     "ko": "코퀴틀람",
     "zh-Hans": "高贵林"
   },
-  "auditoriums": ["coquitlam-sample"],
-  "notes": "Name and area are best-effort. Correct them here if they are wrong."
+  "auditoriums": ["coquitlam-vip-a", "coquitlam-vip-b", "coquitlam-vip-c", "coquitlam-sample"],
+  "notes": "Name confirmed on the booking site (170 Schoolhouse Street). The VIP halls are real seat maps; coquitlam-sample is a made-up stand-in for the standard halls, to be replaced."
 }
